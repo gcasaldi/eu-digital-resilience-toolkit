@@ -1,0 +1,42 @@
+name: Test App
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Test imports
+      run: |
+        python -c "import streamlit; import fpdf; print('✅ Dependencies OK')"
+    
+    - name: Check syntax
+      run: |
+        python -m py_compile app.py
+        python -m py_compile test_email.py
+    
+    - name: Run basic validation
+      run: |
+        python -c "
+        import app
+        assert hasattr(app, 'build_pdf'), 'build_pdf function missing'
+        assert hasattr(app, 'ReportResult'), 'ReportResult class missing'
+        print('✅ App structure validated')
+        "
