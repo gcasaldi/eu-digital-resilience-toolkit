@@ -1,33 +1,43 @@
 # 🛡️ EU Digital Resilience Toolkit
 
+**Master Check-list 2026** - Comprehensive compliance assessment for NIS2, DORA, GDPR, AI Act, and Cyber Resilience Act
+
+[![Deploy to GitHub Pages](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/pages.yml/badge.svg)](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/pages.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-red.svg)](https://streamlit.io)
 
-**Interactive compliance assessment tool for NIS2 and DORA regulations** — built for CISOs, compliance officers, and security professionals.
+## 🚀 Live Demo
 
-## 🎯 What It Does
+**Access the tool here:** [https://gcasaldi.github.io/eu-digital-resilience-toolkit/](https://gcasaldi.github.io/eu-digital-resilience-toolkit/)
 
-This tool provides **step-by-step guided assessments** for EU cybersecurity regulations:
+## 📋 Overview
 
-### ✅ NIS2 – Audit Log Readiness
-- Log export format & quality checks
-- Retention policy compliance (18+ months requirement)
-- Integrity verification (hashing, tamper-proofing)
-- Access control & monitoring
-- Incident response testing
+The EU Digital Resilience Toolkit is a comprehensive, privacy-first assessment framework designed to help organizations prepare for the complex EU regulatory landscape of 2026. It covers six critical compliance areas across multiple regulations.
 
-### ✅ DORA – Third-Party Risk Assessment
-- Vendor inventory completeness
-- Contract clause analysis (right-to-audit, SLAs)
-- Past incident review
-- Data criticality assessment
-- Exit/contingency planning
+### Covered Regulations
 
-**Each assessment generates:**
-- 📊 Risk score (0-100) with color-coded risk level
-- 📋 Detailed findings with context
-- 💡 Actionable recommendations
+- 🔐 **NIS2 Directive** - Cybersecurity for essential & important entities
+- 🏦 **DORA** - Digital Operational Resilience for financial sector  
+- 🛡️ **GDPR** - Data protection and privacy compliance
+- 🤖 **AI Act** - Artificial Intelligence governance and ethical AI
+- ⚙️ **Cyber Resilience Act** - Security requirements for digital products
+- ⚖️ **D.Lgs. 231/2001** - Organizational Model for corporate liability
+
+## 🎯 6 Assessment Areas
+
+1. **Governance & Legal** (20 pts) - Board accountability, Model 231, CISO/DPO/AI Officer
+2. **Risk & Asset Management** (15 pts) - Unified inventory, AI classification, DPIA, SBOM
+3. **Supply Chain** (15 pts) - ICT supplier register, contract clauses 2026
+4. **Incident Response** (15 pts) - Multi-channel notifications (24h CSIRT, 72h GDPR)
+5. **Technical Measures** (20 pts) - MFA, Zero Trust, encryption, immutable backups
+6. **AI & Ethics** (15 pts) - Transparency, bias testing, human oversight
+
+## ✨ Key Features
+
+- ✅ **100% Client-Side** - All data stays in your browser, complete privacy
+- ✅ **Comprehensive** - 50+ questions with specific regulatory article references
+- ✅ **Policy/Implementation/Evidence** - Three-tier verification for audit rigor
+- ✅ **Actionable** - Prioritized recommendations with regulatory gap identification
+- ✅ **Exportable** - Generate TXT and CSV reports
 - 📄 Professional PDF report (downloadable)
 - 📧 Optional anonymous sharing (GDPR-compliant)
 
