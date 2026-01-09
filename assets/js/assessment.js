@@ -38,252 +38,464 @@ const phases = [
 const assessmentQuestions = {
     governance: {
         title: 'Phase 1: Governance & Scope Identification',
-        subtitle: 'Establish regulatory applicability and governance maturity',
+        subtitle: 'NIS2 Art. 20-21 / DORA Art. 5-6 - Establish regulatory applicability and governance maturity',
         questions: [
             {
                 id: 'sector',
-                label: 'Organization sector',
+                label: 'Organization sector (NIS2 Annex I & II / DORA Art. 2)',
                 type: 'select',
                 options: [
-                    'Financial services',
-                    'Energy',
-                    'Transport',
-                    'Digital infrastructure',
-                    'Healthcare',
-                    'Public administration',
-                    'Manufacturing',
-                    'Other/Mixed'
+                    'Financial services (Banking, Insurance, Investment)',
+                    'Energy (Electricity, Oil, Gas, Hydrogen)',
+                    'Transport (Air, Rail, Water, Road)',
+                    'Digital infrastructure (DNS, TLD, Cloud, Data centers)',
+                    'Healthcare (Hospitals, Medical devices, Pharmaceuticals)',
+                    'Public administration (Central, Regional government)',
+                    'Water supply and wastewater',
+                    'Digital providers (Online marketplaces, Search engines, Social networks)',
+                    'Space sector',
+                    'Manufacturing (Critical products)',
+                    'Postal and courier services',
+                    'Waste management',
+                    'Chemicals production',
+                    'Food production and distribution',
+                    'Research organizations',
+                    'Other/Not listed'
                 ]
             },
             {
                 id: 'scope',
-                label: 'Regulatory scope (select all that apply)',
+                label: 'Regulatory scope - Does your organization qualify as: (select all that apply)',
                 type: 'checkbox',
                 options: [
-                    'NIS2 Essential Entity',
-                    'NIS2 Important Entity',
-                    'DORA Financial Entity',
-                    'Not directly in scope'
+                    'NIS2 Essential Entity (>250 employees OR >€50M turnover in critical sector)',
+                    'NIS2 Important Entity (>50 employees OR >€10M turnover in important sector)',
+                    'DORA Financial Entity (Credit institution, Payment institution, E-money institution)',
+                    'DORA ICT Third-Party Service Provider to financial entities',
+                    'Critical ICT Third-Party Service Provider (designated by authorities)',
+                    'Not directly in scope (but considering voluntary compliance)'
                 ]
             },
             {
                 id: 'risk_framework',
-                label: 'ICT risk management framework maturity',
+                label: 'ICT risk management framework maturity (NIS2 Art. 21 / DORA Art. 6)',
                 type: 'select',
                 options: [
-                    'No framework',
-                    'Ad-hoc processes',
-                    'Partially documented',
-                    'Yes, documented and tested'
+                    'No formal ICT risk management framework in place',
+                    'Basic ad-hoc ICT risk assessments performed irregularly',
+                    'ICT risk framework documented but not regularly tested or updated',
+                    'Comprehensive framework with ISO 27001, NIST CSF, or equivalent',
+                    'Advanced framework with continuous monitoring, annual testing, and board approval'
                 ]
             },
             {
                 id: 'board_oversight',
-                label: 'Board-level oversight of ICT/cyber risks',
+                label: 'Management body accountability and oversight (NIS2 Art. 20 / DORA Art. 5)',
                 type: 'select',
                 options: [
-                    'No oversight',
-                    'Annual review',
-                    'Bi-annual reviews',
-                    'Yes, quarterly reviews'
+                    'No formal board/management oversight of ICT risks',
+                    'Ad-hoc reporting to management when incidents occur',
+                    'Annual board review of ICT and cybersecurity risks',
+                    'Quarterly board reports on ICT risks, incidents, and metrics',
+                    'Monthly oversight with dedicated board cyber committee and training'
+                ]
+            },
+            {
+                id: 'critical_functions',
+                label: 'Critical or important functions identification (DORA Art. 6.1)',
+                type: 'select',
+                options: [
+                    'Critical functions not formally identified',
+                    'Partial identification of critical business processes',
+                    'Comprehensive mapping of critical and important functions',
+                    'Full mapping with supporting ICT assets and dependencies documented'
                 ]
             },
             {
                 id: 'cloud_usage',
-                label: 'Cloud services in use (select all that apply)',
+                label: 'Cloud and outsourced ICT services in use (NIS2 Art. 21.2(d) / DORA Art. 28)',
                 type: 'checkbox',
                 options: [
-                    'IaaS (AWS, Azure, GCP)',
-                    'SaaS (M365, Salesforce, etc.)',
-                    'PaaS',
-                    'Managed security services',
-                    'None'
+                    'Public cloud IaaS (AWS, Azure, GCP, Oracle Cloud)',
+                    'SaaS applications (M365, Google Workspace, Salesforce, ServiceNow)',
+                    'Platform services - PaaS (databases, analytics, AI/ML)',
+                    'Managed security services (SOC, SIEM, EDR, threat intel)',
+                    'Payment processing and financial transaction services',
+                    'Cloud-based backup and disaster recovery',
+                    'Third-party hosting or colocation services',
+                    'No cloud or outsourced ICT services'
                 ]
             },
             {
                 id: 'cloud_governance',
-                label: 'Cloud governance framework',
+                label: 'ICT third-party risk management framework (DORA Art. 28-30)',
                 type: 'select',
                 options: [
-                    'No specific framework',
-                    'Informal processes',
-                    'Yes, formalized'
+                    'No formal third-party risk management process',
+                    'Basic vendor assessment at contract signature only',
+                    'Annual vendor risk reviews with basic security questionnaires',
+                    'Comprehensive program: due diligence, contracts, monitoring, exit plans',
+                    'Advanced program with continuous monitoring, audits, and concentration risk management'
                 ],
-                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('None')
+                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('No cloud or outsourced ICT services')
+            },
+            {
+                id: 'security_awareness',
+                label: 'Cybersecurity awareness and training program (NIS2 Art. 21.2(f))',
+                type: 'select',
+                options: [
+                    'No formal security awareness training',
+                    'Annual basic security awareness for all employees',
+                    'Regular training with phishing simulations and role-based modules',
+                    'Comprehensive program with quarterly training, testing, and board-level cyber literacy'
+                ]
             }
         ]
     },
     logging: {
-        title: 'Phase 2: Logging, Monitoring & Auditability',
-        subtitle: 'Visibility, traceability, and evidence readiness (NIS2 + DORA overlap)',
+        title: 'Phase 2: Logging, Monitoring & Detection',
+        subtitle: 'NIS2 Art. 21.2(b)(c) / DORA Art. 17 - Event detection, logging, and security monitoring',
         questions: [
             {
                 id: 'centralized_logging',
-                label: 'Centralized log collection',
+                label: 'Centralized security event logging (NIS2 Art. 21 / DORA Art. 17)',
                 type: 'select',
                 options: [
-                    'No centralization',
-                    'Partial (some sources)',
-                    'Yes, SIEM deployed'
+                    'No centralized logging - logs remain on individual systems',
+                    'Basic log aggregation for some critical systems only',
+                    'Centralized log management platform (SIEM) deployed for most systems',
+                    'Enterprise SIEM with correlation, alerting, and retention (Splunk, QRadar, Sentinel, Chronicle)'
                 ]
             },
             {
                 id: 'log_retention',
-                label: 'Log retention period',
+                label: 'Security log retention period (NIS2: minimum 18 months)',
                 type: 'select',
                 options: [
-                    '<6 months',
+                    'Less than 6 months',
                     '6-12 months',
-                    '12-18 months',
-                    '18-24 months',
-                    '24+ months'
+                    '12-18 months (borderline compliance)',
+                    '18-24 months (NIS2 compliant)',
+                    '24+ months (exceeds requirements)'
+                ]
+            },
+            {
+                id: 'log_coverage',
+                label: 'Log sources covered (NIS2 Art. 21 / DORA Art. 17)',
+                type: 'checkbox',
+                options: [
+                    'Network devices (firewalls, routers, switches, IDS/IPS)',
+                    'Endpoint security (antivirus, EDR, host-based firewalls)',
+                    'Authentication systems (Active Directory, SSO, MFA)',
+                    'Critical applications and databases',
+                    'Cloud infrastructure and services (AWS, Azure, GCP)',
+                    'Email and collaboration platforms',
+                    'Physical access control systems',
+                    'Privileged access management (PAM) systems'
                 ]
             },
             {
                 id: 'log_integrity',
-                label: 'Log integrity verification (hashing, WORM)',
+                label: 'Log integrity and tamper-evidence (DORA Art. 17.4)',
                 type: 'select',
                 options: [
-                    'No verification',
-                    'Manual spot-checks',
-                    'Yes, automated verification'
+                    'No log integrity verification mechanisms',
+                    'Manual periodic reviews and spot-checks',
+                    'Automated hashing (SHA-256) with periodic verification',
+                    'WORM storage or write-once logging with cryptographic signatures',
+                    'Blockchain-based or immutable log storage with real-time verification'
                 ]
             },
             {
                 id: 'cloud_logs_integrated',
-                label: 'Cloud platform logs integrated into SIEM',
+                label: 'Cloud provider logs integrated (AWS CloudTrail, Azure Monitor, GCP Cloud Logging)',
                 type: 'select',
                 options: [
-                    'No',
-                    'Partially',
-                    'Yes, all sources'
+                    'Cloud logs not collected or monitored',
+                    'Basic cloud logs collected but not integrated with SIEM',
+                    'Cloud logs partially integrated (some services)',
+                    'All cloud provider logs fully integrated into central SIEM'
                 ],
-                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('None')
+                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('No cloud or outsourced ICT services')
             },
             {
                 id: 'realtime_monitoring',
-                label: 'Real-time security monitoring',
+                label: 'Continuous security monitoring and SOC operations (NIS2 Art. 21.2(c))',
                 type: 'select',
                 options: [
-                    'No active monitoring',
-                    'Business hours only',
-                    'Yes, 24/7 SOC'
+                    'No active security monitoring',
+                    'Business hours only (8x5) monitoring',
+                    'Extended hours monitoring (12x5 or 16x5)',
+                    '24/7 internal SOC with on-call escalation',
+                    '24/7 SOC (internal or outsourced MDR) with threat hunting'
+                ]
+            },
+            {
+                id: 'threat_detection',
+                label: 'Threat detection and correlation capabilities',
+                type: 'select',
+                options: [
+                    'No automated threat detection',
+                    'Basic signature-based detection (antivirus, IDS)',
+                    'SIEM correlation rules and use cases implemented',
+                    'Advanced detection with UEBA, ML-based anomaly detection',
+                    'Threat intelligence integration and automated response (SOAR)'
+                ]
+            },
+            {
+                id: 'vulnerability_scanning',
+                label: 'Vulnerability management and scanning (NIS2 Art. 21.2(a))',
+                type: 'select',
+                options: [
+                    'No regular vulnerability scanning',
+                    'Annual or ad-hoc vulnerability assessments',
+                    'Quarterly vulnerability scans of external assets',
+                    'Monthly internal and external vulnerability scans',
+                    'Continuous vulnerability scanning with automated remediation tracking'
                 ]
             }
         ]
     },
     third_party: {
-        title: 'Phase 3: ICT Third-Party & Supply Chain Risk',
-        subtitle: 'Dependency management and vendor governance (DORA + NIS2 overlap)',
+        title: 'Phase 3: ICT Third-Party Risk Management',
+        subtitle: 'DORA Art. 28-30 / NIS2 Art. 21.2(d) - Supply chain security and vendor governance',
         questions: [
             {
                 id: 'vendor_inventory',
-                label: 'ICT third-party provider inventory',
+                label: 'Register of ICT third-party providers (DORA Art. 28.1)',
                 type: 'select',
                 options: [
-                    'No inventory',
-                    'Informal list',
-                    'Yes, complete and current'
+                    'No formal inventory of ICT service providers',
+                    'Informal list maintained in spreadsheets',
+                    'Documented inventory but not regularly updated',
+                    'Comprehensive register with criticality classification',
+                    'Full register with contracts, SLAs, dependencies, and concentration risk analysis'
+                ]
+            },
+            {
+                id: 'vendor_due_diligence',
+                label: 'Pre-contractual due diligence process (DORA Art. 28.3)',
+                type: 'select',
+                options: [
+                    'No formal due diligence before engaging vendors',
+                    'Basic financial and legal checks only',
+                    'Security questionnaires for critical vendors',
+                    'Comprehensive assessment: security, financial, operational, reputational',
+                    'Advanced due diligence with on-site audits, certifications review (SOC 2, ISO 27001), and residual risk acceptance'
                 ]
             },
             {
                 id: 'audit_rights',
-                label: 'Contractual audit and access rights',
+                label: 'Contractual audit and access rights (DORA Art. 30.2(g))',
                 type: 'select',
                 options: [
-                    'Not in contracts',
-                    'In some contracts',
-                    'Yes, in all critical contracts'
+                    'No audit rights in ICT service contracts',
+                    'Generic audit clauses without specifics',
+                    'Audit rights in some critical contracts',
+                    'Full audit rights (on-site, documentation, systems) in all critical contracts',
+                    'Comprehensive rights: audits, pentesting, access to SOC reports, subcontractor oversight'
                 ]
             },
             {
                 id: 'incident_notification_sla',
-                label: 'Vendor incident notification SLA',
+                label: 'Vendor incident notification requirements (DORA Art. 19 / NIS2 Art. 23)',
                 type: 'select',
                 options: [
-                    'No SLA',
-                    '72+ hours',
-                    '24 hours',
-                    '12 hours'
+                    'No incident notification requirements in contracts',
+                    'Generic incident reporting clause without SLA',
+                    'Incident notification within 72 hours',
+                    'Notification within 24 hours for security incidents',
+                    'Immediate notification (2-4 hours) with detailed root cause analysis required'
                 ]
             },
             {
-                id: 'cloud_exit_plan',
-                label: 'Cloud exit/portability strategy',
+                id: 'data_location',
+                label: 'Data localization and cross-border requirements (DORA Art. 28.6)',
                 type: 'select',
                 options: [
-                    'No exit plan',
-                    'Documented but not tested',
-                    'Yes, tested annually'
+                    'No requirements on data location',
+                    'Aware of data locations but no contractual controls',
+                    'Contractual requirements for EU/EEA data storage',
+                    'EU data residency enforced with regular verification',
+                    'Full control: EU residency, no foreign access, encryption key management'
                 ],
-                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('None')
+                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('No cloud or outsourced ICT services')
+            },
+            {
+                id: 'cloud_exit_plan',
+                label: 'Exit strategies and data portability (DORA Art. 28.8)',
+                type: 'select',
+                options: [
+                    'No exit strategy or transition planning',
+                    'Basic exit plan documented but never tested',
+                    'Exit strategy documented with annual review',
+                    'Tested exit plans with alternative providers identified',
+                    'Comprehensive strategy: tested annually, backup providers, 90-day transition capability'
+                ],
+                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('No cloud or outsourced ICT services')
+            },
+            {
+                id: 'subcontractor_oversight',
+                label: 'Subcontracting and fourth-party risk (DORA Art. 30.3)',
+                type: 'select',
+                options: [
+                    'No visibility into vendor subcontractors',
+                    'Awareness of major subcontractors but no oversight',
+                    'Contractual notification requirements for subcontractors',
+                    'Approval rights for critical subcontractors',
+                    'Full oversight: approval, audits, direct contracts, concentration limits'
+                ]
             },
             {
                 id: 'supply_chain_monitoring',
-                label: 'Continuous third-party risk monitoring',
+                label: 'Continuous third-party risk monitoring (DORA Art. 28.10)',
                 type: 'select',
                 options: [
-                    'No monitoring',
-                    'Annual assessments',
-                    'Yes, continuous assessment'
+                    'No ongoing monitoring of vendor risk',
+                    'Ad-hoc reviews when issues arise',
+                    'Annual vendor risk assessments',
+                    'Quarterly reviews with security ratings (BitSight, SecurityScorecard)',
+                    'Continuous monitoring: threat intel, breach notifications, financial health, compliance status'
+                ]
+            },
+            {
+                id: 'concentration_risk',
+                label: 'ICT concentration risk management (DORA Art. 28.9)',
+                type: 'select',
+                options: [
+                    'No assessment of vendor concentration risk',
+                    'Aware of major vendors but no formal analysis',
+                    'Documented analysis of critical vendor dependencies',
+                    'Active concentration risk mitigation with multi-vendor strategy',
+                    'Comprehensive program: limits, diversification, alternative providers, scenario testing'
                 ]
             }
         ]
     },
     incident: {
-        title: 'Phase 4: Incident Reporting & Operational Resilience',
-        subtitle: 'Preparedness for disruption and crisis response (NIS2 + DORA)',
+        title: 'Phase 4: Incident Management & Operational Resilience',
+        subtitle: 'NIS2 Art. 23 / DORA Art. 17-19 - Incident response, reporting, and business continuity',
         questions: [
             {
                 id: 'incident_process',
-                label: 'Incident response process',
+                label: 'Incident response plan and procedures (NIS2 Art. 23 / DORA Art. 17)',
                 type: 'select',
                 options: [
-                    'No formal process',
-                    'Process exists, not tested',
-                    'Yes, documented and tested'
+                    'No formal incident response process',
+                    'Basic process documented but not tested',
+                    'Documented IR plan with defined roles and escalation',
+                    'Comprehensive IR plan tested annually with tabletop exercises',
+                    'Advanced IR capability: tested quarterly, automated playbooks, retainer agreements'
+                ]
+            },
+            {
+                id: 'incident_classification',
+                label: 'Incident classification and severity criteria (NIS2 Art. 23.3)',
+                type: 'select',
+                options: [
+                    'No formal incident classification system',
+                    'Basic severity levels (high/medium/low)',
+                    'Defined criteria for significant incidents (availability, confidentiality, integrity impact)',
+                    'Comprehensive taxonomy aligned with NIS2/DORA thresholds',
+                    'Advanced system with automated classification and regulatory notification triggers'
                 ]
             },
             {
                 id: 'reporting_24h',
-                label: 'Capability to report incidents within 24 hours',
+                label: '24-hour early warning capability (NIS2 Art. 23.4)',
                 type: 'select',
                 options: [
-                    'No',
-                    'Uncertain',
-                    'Yes, process established'
+                    'Unable to detect and report incidents within 24 hours',
+                    'Limited capability, depends on business hours',
+                    '24/7 detection but manual reporting process',
+                    'Established 24-hour notification process to CSIRT/authorities',
+                    'Automated detection and reporting within 24 hours with detailed initial assessment'
+                ]
+            },
+            {
+                id: 'notification_authorities',
+                label: 'Incident notification to authorities (NIS2: 24h early, 72h notification, final report)',
+                type: 'select',
+                options: [
+                    'No process for regulatory incident notification',
+                    'Aware of requirements but process not documented',
+                    'Documented process for 72-hour notification',
+                    'Full process: 24h early warning, 72h detailed, final report with root cause',
+                    'Tested notification process with CSIRT, pre-established communication channels'
                 ]
             },
             {
                 id: 'resilience_testing',
-                label: 'Resilience testing frequency',
+                label: 'ICT resilience testing frequency (DORA Art. 24 / NIS2 Art. 21.2(h))',
                 type: 'select',
                 options: [
-                    'Never',
-                    'Annually',
-                    'Bi-annually',
-                    'Quarterly'
+                    'No resilience or DR testing performed',
+                    'Ad-hoc testing when time permits',
+                    'Annual disaster recovery tests',
+                    'Bi-annual comprehensive resilience testing',
+                    'Quarterly testing including TLPT (Threat-Led Penetration Testing) for critical entities'
+                ]
+            },
+            {
+                id: 'bcp_documentation',
+                label: 'Business continuity plans (BCP) and crisis management (NIS2 Art. 21.3)',
+                type: 'select',
+                options: [
+                    'No business continuity or crisis management plans',
+                    'Basic BCP documented but outdated',
+                    'BCP and crisis management plans documented and reviewed annually',
+                    'Comprehensive plans tested annually with defined RPO/RTO',
+                    'Advanced BCM program with quarterly tests, alternate sites, and supply chain continuity'
                 ]
             },
             {
                 id: 'rto_rpo_defined',
-                label: 'RTO/RPO defined for critical systems',
+                label: 'Recovery objectives (RTO/RPO) for critical systems (DORA Art. 11)',
                 type: 'select',
                 options: [
-                    'No',
-                    'For some systems',
-                    'Yes, for all critical systems'
+                    'No RTO/RPO defined',
+                    'Informal recovery expectations',
+                    'RTO/RPO defined for some critical systems',
+                    'Comprehensive RTO/RPO for all critical functions',
+                    'Granular RTO/RPO with automated monitoring and tested recovery procedures'
+                ]
+            },
+            {
+                id: 'backup_strategy',
+                label: 'Backup and recovery strategy (DORA Art. 12 / NIS2 Art. 21.2(e))',
+                type: 'select',
+                options: [
+                    'No systematic backup strategy',
+                    'Basic backups but not regularly tested',
+                    'Regular backups with annual restore testing',
+                    'Comprehensive strategy: daily backups, quarterly restore tests, offsite storage',
+                    'Advanced: continuous replication, immutable backups, automated recovery, tested monthly'
+                ]
+            },
+            {
+                id: 'patch_management',
+                label: 'Patch and vulnerability management (NIS2 Art. 21.2(a))',
+                type: 'select',
+                options: [
+                    'No formal patch management process',
+                    'Ad-hoc patching when reminded',
+                    'Monthly patching cycle for critical systems',
+                    'Systematic process: critical patches within 30 days, testing, exceptions tracked',
+                    'Advanced: emergency patches <7 days, automated deployment, zero-day response plan'
                 ]
             },
             {
                 id: 'cloud_incident_integration',
-                label: 'Cloud provider incidents integrated into IR process',
+                label: 'Cloud provider incident integration (DORA Art. 19)',
                 type: 'select',
                 options: [
-                    'No',
-                    'Yes'
+                    'No integration of cloud provider incidents',
+                    'Aware of cloud provider status pages',
+                    'Cloud incidents manually tracked',
+                    'Automated alerts from cloud providers integrated into IR process',
+                    'Full integration: automated tickets, impact assessment, customer notification'
                 ],
-                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('None')
+                conditional: () => assessmentData.cloud_usage && assessmentData.cloud_usage.length > 0 && !assessmentData.cloud_usage.includes('No cloud or outsourced ICT services')
             }
         ]
     }
