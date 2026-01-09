@@ -358,7 +358,7 @@ function renderResults() {
             <div class="score-summary">
                 <div class="total-score">
                     <h3>Punteggio Complessivo di Conformità</h3>
-                    <div class="score-value">${totalScore}/100</div>
+                    <div class="score-value">${totalScore}/118</div>
                     <div class="risk-badge risk-${riskLevel.toLowerCase()}">
                         ${riskLevel === 'LOW' ? '🟢 RISCHIO BASSO' : 
                           riskLevel === 'MEDIUM' ? '🟡 RISCHIO MEDIO' : 
@@ -369,6 +369,9 @@ function renderResults() {
                           riskLevel === 'MEDIUM' ? 'Buone basi ma gap da colmare. Piano d\'azione prioritizzato necessario.' :
                           'Carenze significative. Azione immediata richiesta per conformità.'}
                     </p>
+                    <p style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">
+                        📊 Punteggio massimo aggiornato a 118 punti (include framework internazionali, sicurezza fisica, forensics, Shadow IT)
+                    </p>
                 </div>
                 
                 <div class="area-scores">
@@ -376,10 +379,10 @@ function renderResults() {
                         <div>
                             <strong>🛡️ Governance</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(govResult.score/20)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(govResult.score/25)*100}%"></div>
                             </div>
                         </div>
-                        <span>${govResult.score}/20</span>
+                        <span>${govResult.score}/25</span>
                     </div>
                     <div class="area-score">
                         <div>
@@ -394,28 +397,28 @@ function renderResults() {
                         <div>
                             <strong>🔗 Supply Chain</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(scResult.score/15)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(scResult.score/20)*100}%"></div>
                             </div>
                         </div>
-                        <span>${scResult.score}/15</span>
+                        <span>${scResult.score}/20</span>
                     </div>
                     <div class="area-score">
                         <div>
                             <strong>🚨 Incident Response</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(irResult.score/15)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(irResult.score/18)*100}%"></div>
                             </div>
                         </div>
-                        <span>${irResult.score}/15</span>
+                        <span>${irResult.score}/18</span>
                     </div>
                     <div class="area-score">
                         <div>
-                            <strong>🔒 Technical Measures</strong>
+                            <strong>🔒 Technical + Physical</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(techResult.score/20)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(techResult.score/25)*100}%"></div>
                             </div>
                         </div>
-                        <span>${techResult.score}/20</span>
+                        <span>${techResult.score}/25</span>
                     </div>
                     <div class="area-score">
                         <div>
@@ -532,15 +535,15 @@ function exportTextReport() {
     report += `Generated: ${new Date().toLocaleString()}\n`;
     report += `=`.repeat(70) + `\n\n`;
     
-    report += `OVERALL COMPLIANCE SCORE: ${totalScore}/100\n`;
+    report += `OVERALL COMPLIANCE SCORE: ${totalScore}/118\n`;
     report += `RISK LEVEL: ${riskLevel}\n\n`;
     
     report += `AREA SCORES:\n`;
-    report += `- Governance & Legal: ${govResult.score}/20\n`;
+    report += `- Governance & Legal: ${govResult.score}/25\n`;
     report += `- Risk & Asset Management: ${riskResult.score}/15\n`;
-    report += `- Supply Chain: ${scResult.score}/15\n`;
-    report += `- Incident Response: ${irResult.score}/15\n`;
-    report += `- Technical Measures: ${techResult.score}/20\n`;
+    report += `- Supply Chain Security: ${scResult.score}/20\n`;
+    report += `- Incident Response: ${irResult.score}/18\n`;
+    report += `- Technical + Physical Security: ${techResult.score}/25\n`;
     report += `- AI & Ethics: ${aiResult.score}/15\n\n`;
     
     const allFindings = [...govResult.findings, ...riskResult.findings, ...scResult.findings,
@@ -639,6 +642,18 @@ function showFeedback(questionId) {
             warning: ['Parziale', 'Solo DPO'],
             critical: ['Nessuna', 'non nominati']
         },
+        'iso_27001_compliance': {
+            best: 'Implementa SGSI conforme ISO 27001:2022 come fondamento strutturale per NIS2/DORA - considera certificazione',
+            good: ['certificata', 'ISO 27001'],
+            warning: ['non certificato', 'informale'],
+            critical: ['Nessun SGSI', 'In preparazione']
+        },
+        'nist_csf_adoption': {
+            best: 'Mappa tutti i controlli alle 6 funzioni NIST CSF 2.0 (Govern/Identify/Protect/Detect/Respond/Recover) con KPI',
+            good: ['integrato', 'KPI'],
+            warning: ['Parziale', 'documentate'],
+            critical: ['non mappate', 'Conoscenza base']
+        },
         
         // RISK MANAGEMENT
         'unified_asset_inventory': {
@@ -691,6 +706,18 @@ function showFeedback(questionId) {
             warning: ['Parziale', 'informale'],
             critical: ['Nessuna', 'non analizzato']
         },
+        'shadow_it_control': {
+            best: 'Implementa CASB (Cloud Access Security Broker) + DLP per discovery, controllo e blocco automatico app non autorizzate',
+            good: ['Controllo totale', 'CASB'],
+            warning: ['Discovery', 'Policy'],
+            critical: ['Nessun controllo', 'Consapevolezza']
+        },
+        'byod_policy': {
+            best: 'MDM completo per tutti BYOD + containerization + network segmentation IoT + inventario completo dispositivi',
+            good: ['Zero Trust IoT', 'MDM completo'],
+            warning: ['MDM parziale', 'Policy base'],
+            critical: ['Nessuna policy', 'non gestiti']
+        },
         
         // INCIDENT RESPONSE
         'notification_procedure': {
@@ -710,6 +737,12 @@ function showFeedback(questionId) {
             good: ['multipli', 'out-of-band'],
             warning: ['limitati', 'solo Teams'],
             critical: ['Solo email', 'inadeguati']
+        },
+        'digital_forensics_capability': {
+            best: 'Team certificato (GCFA, EnCE) + write-blockers + chain of custody documentata + partnership forensi esterni',
+            good: ['Team dedicato', 'certificazioni'],
+            warning: ['Procedure', 'tool base'],
+            critical: ['Nessuna capacità', 'senza chain']
         },
         
         // TECHNICAL MEASURES
@@ -736,6 +769,24 @@ function showFeedback(questionId) {
             good: ['WORM', 'testati'],
             warning: ['backup ma non immutabili', 'non testati'],
             critical: ['Nessun', 'non protetti']
+        },
+        'physical_security': {
+            best: 'Badge elettronici + biometria + videosorveglianza H24 + mantrap + log accessi correlati con eventi digitali',
+            good: ['Biometria', 'monitoraggio H24'],
+            warning: ['Badge + videosorveglianza', 'Buono'],
+            critical: ['Nessun controllo', 'chiave senza log']
+        },
+        'environmental_controls': {
+            best: 'UPS + generatori + soppressione incendi + clima controllato + monitoraggio ambientale H24 + ridondanza geografica',
+            good: ['Eccellente', 'ridondanza'],
+            warning: ['Ottima', 'generatori'],
+            critical: ['Nessuna protezione', 'Solo UPS']
+        },
+        'business_continuity_rto': {
+            best: '🔥 DOMANDA KILLER! Implementa hot standby/active-active con failover <1h. Test failover semestrale obbligatorio.',
+            good: ['Mai', 'failover automatico'],
+            warning: ['2-3 giorni', 'DR site'],
+            critical: ['Immediatamente', 'Poche ore', 'si ferma']
         },
         
         // AI & ETHICS
@@ -845,13 +896,13 @@ function exportCSVReport() {
     const riskLevel = window.assessmentEngine.calculateRiskLevel(totalScore);
     
     let csv = `Area,Score,Max Score\n`;
-    csv += `Governance & Legal,${govResult.score},20\n`;
+    csv += `Governance & Legal,${govResult.score},25\n`;
     csv += `Risk & Asset Management,${riskResult.score},15\n`;
-    csv += `Supply Chain,${scResult.score},15\n`;
-    csv += `Incident Response,${irResult.score},15\n`;
-    csv += `Technical Measures,${techResult.score},20\n`;
+    csv += `Supply Chain Security,${scResult.score},20\n`;
+    csv += `Incident Response,${irResult.score},18\n`;
+    csv += `Technical + Physical Security,${techResult.score},25\n`;
     csv += `AI & Ethics,${aiResult.score},15\n`;
-    csv += `TOTAL,${totalScore},100\n`;
+    csv += `TOTAL,${totalScore},118\n`;
     csv += `RISK LEVEL,${riskLevel},\n\n`;
     
     csv += `Question,Response\n`;

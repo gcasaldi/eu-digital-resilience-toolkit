@@ -8,34 +8,51 @@ const assessmentData = {
     executive_training: '',
     model_231_updated: '',
     roles_assigned: '',
+    iso_27001_compliance: '',  // NEW
+    nist_csf_adoption: '',       // NEW
     
     // Area 2: Risk Management
     unified_asset_inventory: '',
     ai_classification: '',
     dpia_conducted: '',
     sbom_available: '',
+    risk_assessment_frequency: '',
     
     // Area 3: Supply Chain
     ict_supplier_register: '',
     contract_clauses_2026: '',
     supplier_certifications: '',
     concentration_risk: '',
+    subcontractor_oversight: '',
+    shadow_it_control: '',       // NEW
+    byod_policy: '',             // NEW
     
     // Area 4: Incident Response
     notification_procedure: '',
     severity_classification: '',
     emergency_channels: '',
+    incident_reporting_log: '',
+    simulation_exercises: '',
+    digital_forensics_capability: '',  // NEW
     
     // Area 5: Technical Measures
     mfa_zerotrust: '',
     encryption: '',
     vulnerability_management: '',
     immutable_backups: '',
+    network_segmentation: '',
+    logging_monitoring: '',
+    physical_security: '',       // NEW
+    environmental_controls: '',  // NEW
+    business_continuity_rto: '', // NEW - Domanda killer!
     
     // Area 6: AI & Ethics
     ai_transparency: '',
     training_data_quality: '',
     human_oversight: '',
+    ai_systems_in_use: '',
+    ai_risk_assessment: '',
+    ai_documentation: '',
     
     // Additional fields
     sector: '',
@@ -155,6 +172,30 @@ const assessmentQuestions = {
                     'Buono - CISO e DPO nominati formalmente',
                     'Ottimo - CISO, DPO e Resp. IA nominati con lettera di incarico',
                     'Eccellente - Tutti nominati con reporting line al CdA e budget dedicato'
+                ]
+            },
+            {
+                id: 'iso_27001_compliance',
+                label: '🌐 FRAMEWORK INTERNAZIONALE: ISO/IEC 27001:2022 - L\'azienda ha un SGSI (Sistema Gestione Sicurezza Informazioni)?',
+                type: 'select',
+                options: [
+                    'No - Nessun SGSI implementato',
+                    'In preparazione - SGSI in fase di progettazione',
+                    'Parziale - SGSI informale senza certificazione',
+                    'Sì - SGSI documentato conforme ISO 27001 (non certificato)',
+                    'Sì - ISO 27001:2022 certificata con audit annuali'
+                ]
+            },
+            {
+                id: 'nist_csf_adoption',
+                label: '🌐 FRAMEWORK INTERNAZIONALE: NIST CSF 2.0 - Mappate le 6 funzioni (Govern/Identify/Protect/Detect/Respond/Recover)?',
+                type: 'select',
+                options: [
+                    'No - Funzioni NIST non mappate',
+                    'Conoscenza base - Team conosce NIST ma non applicato',
+                    'Parziale - Alcune funzioni mappate informalmente',
+                    'Buono - Tutte le 6 funzioni mappate e documentate',
+                    'Eccellente - NIST CSF 2.0 completamente integrato con metriche KPI'
                 ]
             }
         ]
@@ -290,6 +331,30 @@ const assessmentQuestions = {
                     'Ottimo - Diritto di approvazione per subcontrattori critici',
                     'Eccellente - Oversight completo con audit diretti su subcontrattori'
                 ]
+            },
+            {
+                id: 'shadow_it_control',
+                label: '🔍 SHADOW IT: Controllo app/cloud non autorizzati - Sapete quali tool usano i dipendenti? (Cloud non censito = rischio)',
+                type: 'select',
+                options: [
+                    'No - Nessun controllo su Shadow IT',
+                    'Consapevolezza - Sappiamo che esiste ma non monitoriamo',
+                    'Discovery - Tool CASB/monitoring per identificare app non autorizzate',
+                    'Policy - Shadow IT identificato + policy uso + formazione',
+                    'Controllo totale - CASB + DLP + blocco automatico app non autorizzate'
+                ]
+            },
+            {
+                id: 'byod_policy',
+                label: '📱 BYOD & IoT: Policy BYOD (Bring Your Own Device) + IoT aziendali (stampanti, telecamere, termostati smart)?',
+                type: 'select',
+                options: [
+                    'No - Nessuna policy BYOD, dispositivi personali non gestiti',
+                    'Policy base - Regole scritte ma non enforced tecnicamente',
+                    'MDM parziale - Mobile Device Management solo per alcuni dispositivi',
+                    'MDM completo - Tutti i dispositivi BYOD gestiti + containerization',
+                    'Zero Trust IoT - MDM + network segmentation + inventario IoT completo'
+                ]
             }
         ]
     },
@@ -356,6 +421,18 @@ const assessmentQuestions = {
                     'Annuale - Tabletop exercise annuale',
                     'Semestrale - Esercitazioni ogni 6 mesi con report',
                     'Trimestrale - Simulazioni avanzate (Red Team) + reporting al CdA'
+                ]
+            },
+            {
+                id: 'digital_forensics_capability',
+                label: '🔬 DIGITAL FORENSICS: Capacità investigative - Potete preservare prove digitali senza inquinare i log?',
+                type: 'select',
+                options: [
+                    'No - Nessuna capacità forense',
+                    'Base - Team IT sa fare backup ma senza chain of custody',
+                    'Procedure - Procedure forensi documentate + tool base',
+                    'Team dedicato - Team interno con certificazioni (GCFA, EnCE)',
+                    'Eccellenza forense - Team + write-blockers + chain of custody + partnership con forenser esterni'
                 ]
             }
         ]
@@ -435,6 +512,42 @@ const assessmentQuestions = {
                     'Buono - SIEM implementato per sistemi critici',
                     'Ottimo - SIEM enterprise con retention 18+ mesi',
                     'Eccellente - SIEM + SOAR + threat intelligence + 24/7 SOC'
+                ]
+            },
+            {
+                id: 'physical_security',
+                label: '🏢 PHYSICAL SECURITY: Accesso data center/server room - Log accessi fisici? Badge? Telecamere? (spesso dimenticato!)',
+                type: 'select',
+                options: [
+                    'No - Nessun controllo accessi fisici',
+                    'Base - Stanze chiuse a chiave ma senza log',
+                    'Buono - Badge elettronici con log accessi',
+                    'Ottimo - Badge + videosorveglianza + log correlati',
+                    'Eccellente - Biometria + mantrap + monitoraggio H24 + procedure visitatori'
+                ]
+            },
+            {
+                id: 'environmental_controls',
+                label: '🌡️ ENVIRONMENTAL: Protezione disastri naturali - Antincendio, anti-allagamento, UPS, generatori?',
+                type: 'select',
+                options: [
+                    'No - Nessuna protezione ambientale',
+                    'Minima - Solo UPS base',
+                    'Buona - UPS + rilevazione incendi + estintori',
+                    'Ottima - UPS + generatori + soppressione incendi + clima controllato',
+                    'Eccellente - Ridondanza geografica + dual power feed + monitoraggio ambientale H24'
+                ]
+            },
+            {
+                id: 'business_continuity_rto',
+                label: '⚡ DOMANDA KILLER: Se stacchiamo Internet OGGI, tra quanto tempo l\'azienda smette di fatturare? (RTO reale)',
+                type: 'select',
+                options: [
+                    'Immediatamente - Business si ferma subito',
+                    'Poche ore - Possiamo lavorare 2-4 ore poi stop',
+                    '1 giorno - Abbiamo procedure manuali per 24h',
+                    '2-3 giorni - DR site attivabile in 48-72h',
+                    'Mai - Hot standby/active-active, failover automatico <1h'
                 ]
             }
         ]
@@ -578,6 +691,31 @@ function assessGovernance(data) {
         score -= 2;
         gaps.push("Ambito normativo non identificato - verificare applicabilità NIS2/DORA/AI Act");
     }
+    
+    // ISO 27001 compliance (NEW - 3 pts)
+    if (!data.iso_27001_compliance || data.iso_27001_compliance.includes('Nessun SGSI')) {
+        score -= 3;
+        findings.push("Manca Sistema di Gestione Sicurezza Informazioni (SGSI) secondo ISO 27001");
+        gaps.push("ISO 27001: Standard mondiale per SGSI - fondamentale per audit strutturato");
+        recs.push("CRITICO: Implementare SGSI conforme ISO 27001:2022 come base per conformità NIS2/DORA");
+    } else if (data.iso_27001_compliance.includes('In preparazione') || data.iso_27001_compliance.includes('informale')) {
+        score -= 2;
+        recs.push("Completare implementazione SGSI e considerare certificazione ISO 27001 per maggiore credibilità");
+    } else if (data.iso_27001_compliance.includes('non certificato')) {
+        score -= 1;
+        recs.push("Considerare certificazione ISO 27001 da ente accreditato per validazione esterna");
+    }
+    
+    // NIST CSF adoption (NEW - 2 pts)
+    if (!data.nist_csf_adoption || data.nist_csf_adoption.includes('non mappate')) {
+        score -= 2;
+        findings.push("Funzioni NIST CSF 2.0 non mappate - manca framework operativo");
+        gaps.push("NIST CSF: Best practice per mappare Govern/Identify/Protect/Detect/Respond/Recover");
+        recs.push("Mappare controlli esistenti alle 6 funzioni NIST CSF 2.0 per gap analysis strutturata");
+    } else if (data.nist_csf_adoption.includes('Conoscenza') || data.nist_csf_adoption.includes('Parziale')) {
+        score -= 1;
+        recs.push("Completare mapping NIST CSF e integrare con metriche KPI per misurare maturità");
+    }
 
     return { score, findings, recs, gaps };
 }
@@ -697,6 +835,31 @@ function assessSupplyChain(data) {
         gaps.push("DORA Art. 30.3: Oversight su subcontrattori richiesto");
         recs.push("Inserire clausola obbligo notifica e approvazione subcontrattori critici");
     }
+    
+    // Shadow IT control (NEW - 3 pts)
+    if (!data.shadow_it_control || data.shadow_it_control.includes('Nessun controllo')) {
+        score -= 3;
+        findings.push("Shadow IT non controllato - dipendenti usano app/cloud non autorizzati");
+        gaps.push("NIS2/DORA/GDPR: Cloud non censito = rischio data breach e violazione contratti");
+        recs.push("CRITICO: Implementare CASB (Cloud Access Security Broker) per discovery e controllo Shadow IT");
+    } else if (data.shadow_it_control.includes('Consapevolezza') || data.shadow_it_control.includes('Discovery')) {
+        score -= 2;
+        recs.push("Implementare policy uso cloud + DLP (Data Loss Prevention) + formazione utenti su rischi Shadow IT");
+    } else if (data.shadow_it_control.includes('Policy')) {
+        score -= 1;
+        recs.push("Aggiungere enforcement automatico con blocco app non autorizzate via CASB/proxy");
+    }
+    
+    // BYOD and IoT policy (NEW - 2 pts)
+    if (!data.byod_policy || data.byod_policy.includes('Nessuna policy')) {
+        score -= 2;
+        findings.push("Dispositivi personali (BYOD) e IoT aziendali non gestiti");
+        gaps.push("NIS2/CRA: Stampanti, telecamere, termostati smart = attack vector comune");
+        recs.push("Implementare MDM (Mobile Device Management) per BYOD + inventario IoT + network segmentation");
+    } else if (data.byod_policy.includes('Policy base') || data.byod_policy.includes('MDM parziale')) {
+        score -= 1;
+        recs.push("Estendere MDM a tutti dispositivi + containerization dati aziendali + policy wipe remoto");
+    }
 
     return { score, findings, recs, gaps };
 }
@@ -758,12 +921,26 @@ function assessIncidentResponse(data) {
         gaps.push("NIS2 Art. 21.2(h): Testing resilienza ICT obbligatorio");
         recs.push("Pianificare esercitazioni tabletop almeno annuali per test piano incident response");
     }
+    
+    // Digital forensics capability (NEW - 3 pts)
+    if (!data.digital_forensics_capability || data.digital_forensics_capability.includes('Nessuna capacità')) {
+        score -= 3;
+        findings.push("Nessuna capacità di digital forensics per preservare prove");
+        gaps.push("NIS2/DORA: Se hackerati, autorità chiederanno le prove - necessaria chain of custody");
+        recs.push("CRITICO: Formare team su digital forensics + acquisire write-blockers + definire chain of custody");
+    } else if (data.digital_forensics_capability.includes('Base') || data.digital_forensics_capability.includes('Procedure')) {
+        score -= 2;
+        recs.push("Certificare team (GCFA, EnCE) e stabilire partnership con forensi esterni per casi complessi");
+    } else if (data.digital_forensics_capability.includes('Team dedicato')) {
+        score -= 1;
+        recs.push("Aggiungere tool avanzati (Encase, FTK, X-Ways) e procedure automated evidence collection");
+    }
 
     return { score, findings, recs, gaps };
 }
 
 function assessTechnicalMeasures(data) {
-    let score = 20;
+    let score = 25;  // Aumentato da 20 a 25 per includere Physical + Environmental + BC
     let findings = [];
     let recs = [];
     let gaps = [];
@@ -838,6 +1015,52 @@ function assessTechnicalMeasures(data) {
         gaps.push("NIS2 Art. 21 / DORA Art. 17: SIEM e log retention 18+ mesi richiesti");
         recs.push("Implementare SIEM enterprise con retention minimo 18 mesi");
     }
+    
+    // Physical security (NEW - 3 pts)
+    if (!data.physical_security || data.physical_security.includes('Nessun controllo')) {
+        score -= 3;
+        findings.push("Sicurezza fisica data center inadeguata - manca controllo accessi fisici");
+        gaps.push("ISO 27001 A.11 / Best Practice: Physical security spesso dimenticata ma critica");
+        recs.push("CRITICO: Implementare badge elettronici + log accessi + videosorveglianza per server room");
+    } else if (data.physical_security.includes('Base') || data.physical_security.includes('Buono')) {
+        score -= 2;
+        recs.push("Aggiungere biometria per aree critiche + correlazione log fisici con log digitali");
+    } else if (data.physical_security.includes('Ottimo')) {
+        score -= 1;
+        recs.push("Implementare mantrap (doppia porta) e procedure visitatori con escort obbligatorio");
+    }
+    
+    // Environmental controls (NEW - 3 pts)
+    if (!data.environmental_controls || data.environmental_controls.includes('Nessuna protezione')) {
+        score -= 3;
+        findings.push("Nessuna protezione da disastri naturali - server vulnerabili");
+        gaps.push("ISO 27001 A.11.1.4 / NIS2: Protezione da eventi fisici richiesta");
+        recs.push("CRITICO: Installare UPS + rilevazione incendi + sistema soppressione + generatore backup");
+    } else if (data.environmental_controls.includes('Minima') || data.environmental_controls.includes('Buona')) {
+        score -= 2;
+        recs.push("Aggiungere generatore + monitoraggio temperatura/umidità H24 con alerting");
+    } else if (data.environmental_controls.includes('Ottima')) {
+        score -= 1;
+        recs.push("Considerare ridondanza geografica (sito DR) per massima resilienza");
+    }
+    
+    // Business Continuity RTO - DOMANDA KILLER! (NEW - 4 pts)
+    if (!data.business_continuity_rto || data.business_continuity_rto.includes('Immediatamente')) {
+        score -= 4;
+        findings.push("DOMANDA KILLER: Business si ferma immediatamente senza Internet - RTO inadeguato");
+        gaps.push("NIS2/DORA: Business Continuity = Resilienza Operativa Digitale - CRITICO per NIS2/DORA");
+        recs.push("CRITICO MASSIMO: Implementare DR site + procedure manuali + comunicazione offline - RTO target <4h");
+    } else if (data.business_continuity_rto.includes('Poche ore') || data.business_continuity_rto.includes('1 giorno')) {
+        score -= 3;
+        findings.push("RTO business troppo lungo - vulnerabilità operativa");
+        recs.push("Implementare warm standby con RTO <8h + documentare procedure failover");
+    } else if (data.business_continuity_rto.includes('2-3 giorni')) {
+        score -= 2;
+        recs.push("Ridurre RTO con hot standby o active-active per servizi critici");
+    } else if (data.business_continuity_rto.includes('hot standby')) {
+        score -= 1;
+        recs.push("Ottimizzare failover automatico e testare almeno semestralmente");
+    }
 
     return { score, findings, recs, gaps };
 }
@@ -911,9 +1134,14 @@ function assessAIEthics(data) {
 }
 
 function calculateRiskLevel(score) {
-    if (score >= 85) return "LOW";
-    if (score >= 65) return "MEDIUM";
-    return "HIGH";
+    // Nuovo massimo: 25+15+20+18+25+15 = 118 punti
+    // Ricalibro soglie proporzionalmente
+    const maxScore = 118;
+    const percentage = (score / maxScore) * 100;
+    
+    if (percentage >= 85) return "LOW";      // ≥100 punti
+    if (percentage >= 65) return "MEDIUM";   // ≥77 punti  
+    return "HIGH";                            // <77 punti
 }
 
 // Export everything to window
