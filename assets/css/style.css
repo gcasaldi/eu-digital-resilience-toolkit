@@ -1,0 +1,655 @@
+/* EU Digital Resilience Toolkit - Styles */
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #64748b;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --bg-light: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, var(--primary-color), #1e40af);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow-lg);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.tagline {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+/* Navigation */
+#main-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.nav-btn {
+    padding: 12px 24px;
+    background-color: var(--bg-card);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s;
+    color: var(--text-primary);
+}
+
+.nav-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.nav-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* Views */
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero Section */
+.hero {
+    background-color: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: var(--shadow);
+}
+
+.hero h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.hero ul {
+    margin-left: 20px;
+    margin-top: 10px;
+}
+
+.hero li {
+    margin-bottom: 8px;
+}
+
+/* Features */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.feature-card {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feature-card h3 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+/* Assessment Domains */
+.assessment-domains {
+    margin-bottom: 40px;
+}
+
+.assessment-domains h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+}
+
+.domains-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+
+.domain-card {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border-left: 4px solid var(--primary-color);
+}
+
+.domain-card h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
+}
+
+.domain-card ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.domain-card li {
+    margin-bottom: 8px;
+    color: var(--text-secondary);
+}
+
+.points {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-top: 10px;
+}
+
+/* Risk Levels */
+.risk-levels {
+    margin-bottom: 40px;
+}
+
+.risk-levels h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+}
+
+.risk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.risk-card {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    border-top: 5px solid;
+}
+
+.risk-low {
+    border-top-color: var(--success-color);
+}
+
+.risk-medium {
+    border-top-color: var(--warning-color);
+}
+
+.risk-high {
+    border-top-color: var(--danger-color);
+}
+
+.risk-card h3 {
+    margin-bottom: 10px;
+}
+
+.risk-card .score {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+}
+
+/* CTA Section */
+.cta {
+    text-align: center;
+    padding: 40px;
+    background-color: var(--bg-card);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.cta-info {
+    margin-top: 15px;
+    color: var(--text-secondary);
+}
+
+/* Buttons */
+.btn-primary,
+.btn-secondary {
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #1e40af;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    background-color: var(--bg-card);
+    color: var(--primary-color);
+    border: 2px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Progress Bar */
+.progress-container {
+    margin-bottom: 30px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), #1e40af);
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.progress-step {
+    flex: 1;
+    min-width: 150px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.progress-step.completed {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.progress-step.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.progress-step.pending {
+    background-color: var(--bg-card);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}
+
+/* Assessment Form */
+#assessment-content {
+    background-color: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+}
+
+.phase-content h2 {
+    color: var(--primary-color);
+    margin-bottom: 10px;
+}
+
+.phase-content .phase-subtitle {
+    color: var(--text-secondary);
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.form-group select,
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s;
+}
+
+.form-group select:focus,
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-group-inline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.checkbox-label:hover {
+    border-color: var(--primary-color);
+    background-color: var(--bg-light);
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* Assessment Navigation */
+.assessment-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.assessment-nav button {
+    flex: 1;
+    max-width: 200px;
+}
+
+/* Results Section */
+.results-summary {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, var(--primary-color), #1e40af);
+    color: white;
+    border-radius: 12px;
+    margin-bottom: 30px;
+}
+
+.results-summary h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.score-display {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.score-item {
+    text-align: center;
+}
+
+.score-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+    display: block;
+}
+
+.score-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+.results-details {
+    display: grid;
+    gap: 20px;
+}
+
+.result-section {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.result-section h3 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.result-section ul {
+    margin-left: 20px;
+}
+
+.result-section li {
+    margin-bottom: 10px;
+}
+
+.gap-item {
+    background-color: #fef3c7;
+    padding: 12px;
+    border-left: 4px solid var(--warning-color);
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.recommendation-item {
+    background-color: #dbeafe;
+    padding: 12px;
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.priority-high {
+    border-left-color: var(--danger-color);
+    background-color: #fee2e2;
+}
+
+.priority-medium {
+    border-left-color: var(--warning-color);
+    background-color: #fef3c7;
+}
+
+.priority-low {
+    border-left-color: var(--success-color);
+    background-color: #d1fae5;
+}
+
+/* Export Buttons */
+.export-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+/* About Section */
+.about-content {
+    background-color: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+
+.about-content h3 {
+    color: var(--primary-color);
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+.about-content ul {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
+.about-content li {
+    margin-bottom: 10px;
+}
+
+.disclaimer {
+    background-color: #fef3c7;
+    padding: 15px;
+    border-left: 4px solid var(--warning-color);
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.links {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    margin-top: 50px;
+    border-top: 2px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .domains-grid,
+    .risk-grid,
+    .features {
+        grid-template-columns: 1fr;
+    }
+
+    .assessment-nav {
+        flex-direction: column;
+    }
+
+    .assessment-nav button {
+        max-width: 100%;
+    }
+
+    .score-display {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-group-inline {
+        grid-template-columns: 1fr;
+    }
+}

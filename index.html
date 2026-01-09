@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive compliance toolkit for NIS2 and DORA readiness assessments. Privacy-first risk assessment tool.">
+    <title>🛡️ EU Digital Resilience Toolkit</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🛡️ EU Digital Resilience Toolkit</h1>
+            <p class="subtitle">Integrated NIS2 & DORA Compliance Assessment</p>
+            <p class="tagline">Privacy-first | Actionable | Audit-ready</p>
+        </header>
+
+        <!-- Navigation -->
+        <nav id="main-nav">
+            <button class="nav-btn active" data-view="home">Home</button>
+            <button class="nav-btn" data-view="assessment">Risk Assessment</button>
+            <button class="nav-btn" data-view="about">About</button>
+        </nav>
+
+        <!-- Home View -->
+        <section id="home-view" class="view active">
+            <div class="hero">
+                <h2>About This Toolkit</h2>
+                <p>The <strong>EU Digital Resilience Toolkit</strong> is a comprehensive assessment framework designed to help 
+                organizations evaluate their compliance posture against two critical EU regulations:</p>
+                <ul>
+                    <li><strong>NIS2 Directive</strong> (Network and Information Security)</li>
+                    <li><strong>DORA Regulation</strong> (Digital Operational Resilience Act)</li>
+                </ul>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <h3>✅ Privacy-First</h3>
+                    <p>All data stays in your browser. No data is collected or stored on any server.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Actionable</h3>
+                    <p>Get specific, prioritized recommendations based on your responses.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Audit-Ready</h3>
+                    <p>Generate professional reports for compliance documentation.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>✅ Comprehensive</h3>
+                    <p>Covers 4 critical domains with 100-point scoring system.</p>
+                </div>
+            </div>
+
+            <div class="assessment-domains">
+                <h2>🎯 Assessment Domains</h2>
+                <div class="domains-grid">
+                    <div class="domain-card">
+                        <h3>1️⃣ Governance & Scope</h3>
+                        <ul>
+                            <li>Sector classification</li>
+                            <li>ICT risk framework</li>
+                            <li>Board oversight</li>
+                            <li>Cloud governance</li>
+                        </ul>
+                        <p class="points">Max Score: 25 pts</p>
+                    </div>
+                    <div class="domain-card">
+                        <h3>2️⃣ Logging & Monitoring</h3>
+                        <ul>
+                            <li>Centralized collection</li>
+                            <li>Retention policies</li>
+                            <li>Log integrity</li>
+                            <li>Real-time monitoring</li>
+                        </ul>
+                        <p class="points">Max Score: 25 pts</p>
+                    </div>
+                    <div class="domain-card">
+                        <h3>3️⃣ Third-Party Risk</h3>
+                        <ul>
+                            <li>Vendor inventory</li>
+                            <li>Audit rights</li>
+                            <li>SLA management</li>
+                            <li>Supply chain monitoring</li>
+                        </ul>
+                        <p class="points">Max Score: 25 pts</p>
+                    </div>
+                    <div class="domain-card">
+                        <h3>4️⃣ Incident Response</h3>
+                        <ul>
+                            <li>Response processes</li>
+                            <li>Reporting capability</li>
+                            <li>Resilience testing</li>
+                            <li>RTO/RPO definition</li>
+                        </ul>
+                        <p class="points">Max Score: 25 pts</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="risk-levels">
+                <h2>📊 Risk Classification</h2>
+                <div class="risk-grid">
+                    <div class="risk-card risk-low">
+                        <h3>🟢 LOW RISK</h3>
+                        <p class="score">Score: 85-100 points</p>
+                        <p>Strong compliance posture with minimal gaps. Organization demonstrates mature security controls and governance processes.</p>
+                    </div>
+                    <div class="risk-card risk-medium">
+                        <h3>🟡 MEDIUM RISK</h3>
+                        <p class="score">Score: 65-84 points</p>
+                        <p>Moderate compliance gaps that require attention. Some controls in place but improvements needed.</p>
+                    </div>
+                    <div class="risk-card risk-high">
+                        <h3>🔴 HIGH RISK</h3>
+                        <p class="score">Score: 0-64 points</p>
+                        <p>Significant compliance gaps requiring immediate action. Critical controls missing or inadequate.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cta">
+                <button class="btn-primary" onclick="startAssessment()">🚀 Start Risk Assessment</button>
+                <p class="cta-info">Takes approximately 5-10 minutes to complete</p>
+            </div>
+        </section>
+
+        <!-- Assessment View -->
+        <section id="assessment-view" class="view">
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-steps" id="progress-steps"></div>
+            </div>
+
+            <!-- Assessment Phases -->
+            <div id="assessment-content"></div>
+
+            <!-- Navigation Buttons -->
+            <div class="assessment-nav">
+                <button id="btn-back" class="btn-secondary" onclick="previousPhase()" style="display: none;">← Back</button>
+                <button id="btn-next" class="btn-primary" onclick="nextPhase()">Continue →</button>
+            </div>
+        </section>
+
+        <!-- About View -->
+        <section id="about-view" class="view">
+            <h2>About This Tool</h2>
+            <div class="about-content">
+                <p>The EU Digital Resilience Toolkit is an open-source project designed to help organizations assess their readiness for EU cybersecurity regulations.</p>
+                
+                <h3>Key Features</h3>
+                <ul>
+                    <li>100% client-side processing - your data never leaves your browser</li>
+                    <li>Comprehensive 4-phase assessment covering governance, logging, third-party risk, and incident response</li>
+                    <li>Instant scoring and prioritized recommendations</li>
+                    <li>Exportable reports in multiple formats</li>
+                </ul>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li>🏦 Pre-audit preparation for financial institutions</li>
+                    <li>🤝 Vendor risk assessment</li>
+                    <li>📊 Board-level reporting</li>
+                    <li>💼 Compliance consulting</li>
+                    <li>📈 Continuous improvement tracking</li>
+                </ul>
+
+                <h3>Disclaimer</h3>
+                <p class="disclaimer">This assessment is a readiness and risk evaluation tool. It does not constitute legal advice. Organizations should consult legal counsel for compliance strategy.</p>
+
+                <div class="links">
+                    <a href="https://github.com/gcasaldi/eu-digital-resilience-toolkit" target="_blank" class="btn-secondary">📚 View on GitHub</a>
+                    <a href="https://github.com/gcasaldi/eu-digital-resilience-toolkit/issues" target="_blank" class="btn-secondary">🐛 Report Issues</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer>
+            <p>EU Digital Resilience Toolkit v1.0 | Framework: NIS2 Directive + DORA Regulation</p>
+            <p>
+                <a href="https://github.com/gcasaldi/eu-digital-resilience-toolkit" target="_blank">GitHub</a> | 
+                <a href="README.md">Documentation</a> | 
+                <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="assets/js/assessment.js"></script>
+    <script src="assets/js/main.js"></script>
+</body>
+</html>
