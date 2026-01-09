@@ -482,6 +482,12 @@ function renderResults() {
                     Scarica il report completo per documentazione interna e preparazione audit
                 </p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="exportPDFReport()" class="btn-primary" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        📊 Report PDF Professionale
+                    </button>
+                    <button onclick="exportRemediationPlan()" class="btn-primary" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                        🎯 Piano di Rimedio (PDF)
+                    </button>
                     <button onclick="exportTextReport()" class="btn-secondary">
                         📄 Report Testuale (.txt)
                     </button>
@@ -599,6 +605,481 @@ function exportTextReport() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// ==========================================
+// ENTERPRISE FEATURE: PDF Report Generator
+// ==========================================
+async function exportPDFReport() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Get assessment results
+    const assessmentData = window.assessmentEngine.assessmentData;
+    const govResult = window.assessmentEngine.assessGovernance();
+    const riskResult = window.assessmentEngine.assessRiskManagement();
+    const scResult = window.assessmentEngine.assessSupplyChain();
+    const irResult = window.assessmentEngine.assessIncidentResponse();
+    const techResult = window.assessmentEngine.assessTechnicalMeasures();
+    const aiResult = window.assessmentEngine.assessAIEthics();
+    const totalScore = govResult.score + riskResult.score + scResult.score + 
+                       irResult.score + techResult.score + aiResult.score;
+    const riskLevel = window.assessmentEngine.calculateRiskLevel(totalScore);
+    const percentage = ((totalScore / 130) * 100).toFixed(1);
+    
+    // Colors
+    const primaryColor = [102, 126, 234];
+    const secondaryColor = [100, 116, 139];
+    const dangerColor = [239, 68, 68];
+    const warningColor = [245, 158, 11];
+    const successColor = [34, 197, 94];
+    
+    // Header with branding
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(24);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🛡️ NIS2 Gold Standard Assessment', 105, 20, { align: 'center' });
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    doc.text('EU Digital Resilience Toolkit - Compliance Report 2026', 105, 30, { align: 'center' });
+    
+    // Executive Summary Box
+    let yPos = 50;
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(16);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📋 Executive Summary', 20, yPos);
+    
+    yPos += 10;
+    doc.setFillColor(248, 250, 252);
+    doc.rect(20, yPos, 170, 40, 'F');
+    doc.setDrawColor(...secondaryColor);
+    doc.rect(20, yPos, 170, 40);
+    
+    yPos += 10;
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Assessment Date: ${new Date().toLocaleDateString('it-IT')}`, 25, yPos);
+    yPos += 7;
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Overall Compliance Score: ${totalScore}/130 points (${percentage}%)`, 25, yPos);
+    yPos += 7;
+    
+    // Risk level with color
+    if (riskLevel === 'LOW') {
+        doc.setTextColor(...successColor);
+        doc.text('🟢 Risk Level: LOW - Strong compliance posture', 25, yPos);
+    } else if (riskLevel === 'MEDIUM') {
+        doc.setTextColor(...warningColor);
+        doc.text('🟡 Risk Level: MEDIUM - Moderate gaps require attention', 25, yPos);
+    } else {
+        doc.setTextColor(...dangerColor);
+        doc.text('🔴 Risk Level: HIGH - Critical action required', 25, yPos);
+    }
+    
+    yPos += 7;
+    doc.setTextColor(0, 0, 0);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Regulatory Framework: NIS2, DORA, GDPR, AI Act, CRA, ISO 27001, NIST CSF`, 25, yPos);
+    
+    // Area Scores Section
+    yPos += 20;
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📊 Compliance by Assessment Area', 20, yPos);
+    
+    yPos += 8;
+    const areas = [
+        { name: '1. Governance & Legal', score: govResult.score, max: 29, icon: '⚖️' },
+        { name: '2. Risk & Asset Management', score: riskResult.score, max: 19, icon: '🎯' },
+        { name: '3. Supply Chain Security', score: scResult.score, max: 22, icon: '🔗' },
+        { name: '4. Incident Response', score: irResult.score, max: 18, icon: '🚨' },
+        { name: '5. Technical + Physical Security', score: techResult.score, max: 27, icon: '🔒' },
+        { name: '6. AI & Ethics', score: aiResult.score, max: 15, icon: '🤖' }
+    ];
+    
+    areas.forEach(area => {
+        const areaPercentage = ((area.score / area.max) * 100).toFixed(0);
+        
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text(`${area.icon} ${area.name}`, 20, yPos);
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${area.score}/${area.max} (${areaPercentage}%)`, 160, yPos);
+        
+        // Progress bar
+        yPos += 3;
+        doc.setDrawColor(...secondaryColor);
+        doc.rect(20, yPos, 170, 4);
+        
+        const barWidth = (area.score / area.max) * 170;
+        if (areaPercentage >= 85) {
+            doc.setFillColor(...successColor);
+        } else if (areaPercentage >= 65) {
+            doc.setFillColor(...warningColor);
+        } else {
+            doc.setFillColor(...dangerColor);
+        }
+        doc.rect(20, yPos, barWidth, 4, 'F');
+        
+        yPos += 10;
+    });
+    
+    // Critical Findings Section
+    yPos += 5;
+    if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...dangerColor);
+    doc.text('🔴 Critical Findings', 20, yPos);
+    
+    yPos += 8;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    const allFindings = [
+        ...govResult.findings,
+        ...riskResult.findings,
+        ...scResult.findings,
+        ...irResult.findings,
+        ...techResult.findings,
+        ...aiResult.findings
+    ];
+    
+    if (allFindings.length > 0) {
+        allFindings.forEach((finding, idx) => {
+            if (yPos > 270) {
+                doc.addPage();
+                yPos = 20;
+            }
+            const lines = doc.splitTextToSize(`• ${finding}`, 170);
+            doc.text(lines, 20, yPos);
+            yPos += lines.length * 5;
+        });
+    } else {
+        doc.setTextColor(...successColor);
+        doc.text('✅ No critical findings identified - Excellent compliance posture!', 20, yPos);
+        doc.setTextColor(0, 0, 0);
+    }
+    
+    // Top Recommendations
+    yPos += 10;
+    if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primaryColor);
+    doc.text('💡 Top 5 Recommendations', 20, yPos);
+    
+    yPos += 8;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    const allRecs = [
+        ...govResult.recommendations,
+        ...riskResult.recommendations,
+        ...scResult.recommendations,
+        ...irResult.recommendations,
+        ...techResult.recommendations,
+        ...aiResult.recommendations
+    ];
+    
+    const topRecs = allRecs.slice(0, 5);
+    topRecs.forEach((rec, idx) => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        const priority = idx < 3 ? '🔴 HIGH' : '🟡 MEDIUM';
+        const lines = doc.splitTextToSize(`${idx + 1}. [${priority}] ${rec}`, 170);
+        doc.text(lines, 20, yPos);
+        yPos += lines.length * 5;
+    });
+    
+    // Footer on all pages
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(...secondaryColor);
+        doc.text(`NIS2 Gold Standard Assessment Report | Page ${i}/${pageCount}`, 105, 285, { align: 'center' });
+        doc.text(`Generated by EU Digital Resilience Toolkit | ${new Date().toLocaleDateString('it-IT')}`, 105, 290, { align: 'center' });
+    }
+    
+    // Save PDF
+    doc.save(`NIS2_Compliance_Report_${Date.now()}.pdf`);
+}
+
+// ==========================================
+// ENTERPRISE FEATURE: Remediation Plan Generator
+// ==========================================
+async function exportRemediationPlan() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Get assessment results
+    const govResult = window.assessmentEngine.assessGovernance();
+    const riskResult = window.assessmentEngine.assessRiskManagement();
+    const scResult = window.assessmentEngine.assessSupplyChain();
+    const irResult = window.assessmentEngine.assessIncidentResponse();
+    const techResult = window.assessmentEngine.assessTechnicalMeasures();
+    const aiResult = window.assessmentEngine.assessAIEthics();
+    
+    const totalScore = govResult.score + riskResult.score + scResult.score + 
+                       irResult.score + techResult.score + aiResult.score;
+    
+    // Collect all gaps and recommendations
+    const allGaps = [
+        ...govResult.gaps.map(g => ({ area: 'Governance', gap: g, priority: 'HIGH', effort: '10-20 days', owner: 'CISO + Legal', budget: '5-15k€' })),
+        ...riskResult.gaps.map(g => ({ area: 'Risk Management', gap: g, priority: 'HIGH', effort: '5-10 days', owner: 'Risk Manager', budget: '3-8k€' })),
+        ...scResult.gaps.map(g => ({ area: 'Supply Chain', gap: g, priority: 'MEDIUM', effort: '10-15 days', owner: 'Procurement + IT', budget: '5-12k€' })),
+        ...irResult.gaps.map(g => ({ area: 'Incident Response', gap: g, priority: 'CRITICAL', effort: '15-30 days', owner: 'CISO + IT Manager', budget: '10-20k€' })),
+        ...techResult.gaps.map(g => ({ area: 'Technical Security', gap: g, priority: 'HIGH', effort: '10-20 days', owner: 'IT Security Team', budget: '8-15k€' })),
+        ...aiResult.gaps.map(g => ({ area: 'AI Ethics', gap: g, priority: 'MEDIUM', effort: '5-10 days', owner: 'AI Officer + DPO', budget: '3-10k€' }))
+    ];
+    
+    const allRecs = [
+        ...govResult.recommendations.map(r => ({ area: 'Governance', rec: r, priority: 'HIGH', effort: '5-15 days', owner: 'Board + CISO', budget: '5-10k€', deadline: 'Q1 2026' })),
+        ...riskResult.recommendations.map(r => ({ area: 'Risk Management', rec: r, priority: 'HIGH', effort: '3-10 days', owner: 'Risk Manager', budget: '2-8k€', deadline: 'Q1-Q2 2026' })),
+        ...scResult.recommendations.map(r => ({ area: 'Supply Chain', rec: r, priority: 'MEDIUM', effort: '5-12 days', owner: 'Procurement', budget: '3-12k€', deadline: 'Q2 2026' })),
+        ...irResult.recommendations.map(r => ({ area: 'Incident Response', rec: r, priority: 'CRITICAL', effort: '10-25 days', owner: 'CISO + SOC', budget: '8-20k€', deadline: 'ASAP' })),
+        ...techResult.recommendations.map(r => ({ area: 'Technical', rec: r, priority: 'HIGH', effort: '8-20 days', owner: 'IT Security', budget: '5-15k€', deadline: 'Q1-Q2 2026' })),
+        ...aiResult.recommendations.map(r => ({ area: 'AI Ethics', rec: r, priority: 'MEDIUM', effort: '3-8 days', owner: 'AI Officer', budget: '2-8k€', deadline: 'Q2-Q3 2026' }))
+    ];
+    
+    // Sort by priority
+    const priorityOrder = { 'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3 };
+    allRecs.sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
+    
+    const primaryColor = [102, 126, 234];
+    const dangerColor = [239, 68, 68];
+    const warningColor = [245, 158, 11];
+    const successColor = [34, 197, 94];
+    
+    // Header
+    doc.setFillColor(...primaryColor);
+    doc.rect(0, 0, 210, 40, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🎯 NIS2 Compliance Remediation Plan', 105, 20, { align: 'center' });
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Actionable Roadmap to Full Compliance - Generated ' + new Date().toLocaleDateString('it-IT'), 105, 30, { align: 'center' });
+    
+    let yPos = 50;
+    
+    // Executive Summary
+    doc.setTextColor(0, 0, 0);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📊 Remediation Overview', 20, yPos);
+    
+    yPos += 8;
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`Total Actions Required: ${allRecs.length}`, 20, yPos);
+    yPos += 6;
+    
+    const criticalCount = allRecs.filter(r => r.priority === 'CRITICAL').length;
+    const highCount = allRecs.filter(r => r.priority === 'HIGH').length;
+    const mediumCount = allRecs.filter(r => r.priority === 'MEDIUM').length;
+    
+    doc.setTextColor(...dangerColor);
+    doc.text(`🔴 Critical Priority: ${criticalCount} actions`, 20, yPos);
+    yPos += 6;
+    doc.setTextColor(...warningColor);
+    doc.text(`🟡 High Priority: ${highCount} actions`, 20, yPos);
+    yPos += 6;
+    doc.setTextColor(100, 116, 139);
+    doc.text(`🟢 Medium Priority: ${mediumCount} actions`, 20, yPos);
+    yPos += 6;
+    
+    doc.setTextColor(0, 0, 0);
+    const totalEffort = allRecs.length * 12; // Average 12 days per action
+    const totalBudget = allRecs.length * 10; // Average 10k€ per action
+    doc.text(`Estimated Total Effort: ${totalEffort}-${totalEffort * 1.5} days`, 20, yPos);
+    yPos += 6;
+    doc.text(`Estimated Total Budget: ${totalBudget}k€ - ${totalBudget * 1.5}k€`, 20, yPos);
+    yPos += 6;
+    doc.text(`Target Completion: Q3-Q4 2026 (before NIS2 enforcement)`, 20, yPos);
+    
+    // Priority Actions
+    yPos += 12;
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🔥 Priority 1: CRITICAL ACTIONS (Immediate)', 20, yPos);
+    
+    yPos += 8;
+    const criticalActions = allRecs.filter(r => r.priority === 'CRITICAL');
+    
+    if (criticalActions.length > 0) {
+        criticalActions.forEach((action, idx) => {
+            if (yPos > 260) {
+                doc.addPage();
+                yPos = 20;
+            }
+            
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(...dangerColor);
+            doc.text(`${idx + 1}. ${action.area}`, 20, yPos);
+            
+            yPos += 5;
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(0, 0, 0);
+            const lines = doc.splitTextToSize(action.rec, 160);
+            doc.text(lines, 25, yPos);
+            yPos += lines.length * 4;
+            
+            yPos += 3;
+            doc.setFontSize(8);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`👤 Owner: ${action.owner} | ⏱️ Effort: ${action.effort} | 💰 Budget: ${action.budget} | 📅 Deadline: ${action.deadline}`, 25, yPos);
+            yPos += 8;
+        });
+    } else {
+        doc.setFontSize(9);
+        doc.setTextColor(...successColor);
+        doc.text('✅ No critical actions required!', 20, yPos);
+        yPos += 8;
+    }
+    
+    // High Priority Actions
+    yPos += 5;
+    if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 0, 0);
+    doc.text('🔴 Priority 2: HIGH PRIORITY ACTIONS', 20, yPos);
+    
+    yPos += 8;
+    const highActions = allRecs.filter(r => r.priority === 'HIGH').slice(0, 10); // Top 10
+    
+    highActions.forEach((action, idx) => {
+        if (yPos > 260) {
+            doc.addPage();
+            yPos = 20;
+        }
+        
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...warningColor);
+        doc.text(`${idx + 1}. ${action.area}`, 20, yPos);
+        
+        yPos += 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
+        const lines = doc.splitTextToSize(action.rec, 160);
+        doc.text(lines, 25, yPos);
+        yPos += lines.length * 4;
+        
+        yPos += 3;
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`👤 ${action.owner} | ⏱️ ${action.effort} | 💰 ${action.budget} | 📅 ${action.deadline}`, 25, yPos);
+        yPos += 8;
+    });
+    
+    // Quick Wins Section
+    doc.addPage();
+    yPos = 20;
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...successColor);
+    doc.text('⚡ QUICK WINS (30-60 days - Low effort, high impact)', 20, yPos);
+    
+    yPos += 8;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    const quickWins = [
+        '• Update Model 231 with cybersecurity protocols (Legal team - 5 days - 2k€)',
+        '• Formalize CISO/DPO/AI Officer roles with written mandates (HR + Legal - 3 days - 0€)',
+        '• Document existing MFA deployment and gaps (IT - 2 days - 0€)',
+        '• Create unified asset inventory spreadsheet (IT - 5 days - 1k€)',
+        '• Draft incident notification templates (24h CSIRT, 72h GDPR) (CISO - 3 days - 0€)',
+        '• Schedule quarterly security awareness training (HR - 2 days - 3k€/year)',
+        '• Implement automated backup verification tests (IT - 5 days - 2k€)',
+        '• Create supply chain security questionnaire template (Procurement - 3 days - 0€)'
+    ];
+    
+    quickWins.forEach(win => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        const lines = doc.splitTextToSize(win, 170);
+        doc.text(lines, 20, yPos);
+        yPos += lines.length * 5;
+    });
+    
+    // Implementation Timeline
+    yPos += 10;
+    if (yPos > 240) {
+        doc.addPage();
+        yPos = 20;
+    }
+    
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...primaryColor);
+    doc.text('📅 Suggested Implementation Timeline', 20, yPos);
+    
+    yPos += 8;
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    const timeline = [
+        { phase: 'Phase 1 (Q1 2026)', actions: 'Critical actions + Quick wins + Governance foundations', duration: '30-60 days' },
+        { phase: 'Phase 2 (Q2 2026)', actions: 'High priority technical controls + Supply chain security', duration: '60-90 days' },
+        { phase: 'Phase 3 (Q3 2026)', actions: 'Medium priority + Testing & validation + Documentation', duration: '60-90 days' },
+        { phase: 'Phase 4 (Q4 2026)', actions: 'Final gap closure + External audit preparation + Certification', duration: '30-60 days' }
+    ];
+    
+    timeline.forEach(t => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.text(t.phase, 20, yPos);
+        yPos += 5;
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);
+        doc.text(lines, 20, yPos);
+        yPos += lines.length * 5 + 3;
+    });
+    
+    // Footer
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`NIS2 Remediation Plan | Page ${i}/${pageCount}`, 105, 285, { align: 'center' });
+        doc.text(`EU Digital Resilience Toolkit | Generated ${new Date().toLocaleDateString('it-IT')}`, 105, 290, { align: 'center' });
+    }
+    
+    doc.save(`NIS2_Remediation_Plan_${Date.now()}.pdf`);
 }
 
 // Real-time feedback function - COMPREHENSIVE for ALL questions
