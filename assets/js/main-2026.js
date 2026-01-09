@@ -264,6 +264,8 @@ function previousPhase() {
 
 // Render results
 function renderResults() {
+    console.log('=== RENDERING RESULTS ===');
+    
     const {
         assessmentData,
         assessGovernance,
@@ -275,6 +277,8 @@ function renderResults() {
         calculateRiskLevel
     } = window.assessmentEngine;
     
+    console.log('Assessment data:', assessmentData);
+    
     // Calculate all scores
     const govResult = assessGovernance(assessmentData);
     const riskResult = assessRiskManagement(assessmentData);
@@ -283,10 +287,21 @@ function renderResults() {
     const techResult = assessTechnicalMeasures(assessmentData);
     const aiResult = assessAIEthics(assessmentData);
     
+    console.log('Scores:', {
+        governance: govResult.score,
+        risk: riskResult.score,
+        supply: scResult.score,
+        incident: irResult.score,
+        technical: techResult.score,
+        ai: aiResult.score
+    });
+    
     const totalScore = govResult.score + riskResult.score + scResult.score + 
                        irResult.score + techResult.score + aiResult.score;
     
     const riskLevel = calculateRiskLevel(totalScore);
+    
+    console.log('Total score:', totalScore, 'Risk level:', riskLevel);
     
     // Combine all findings and recommendations
     const allFindings = [
@@ -316,46 +331,99 @@ function renderResults() {
         ...aiResult.recs
     ];
     
+    console.log('Findings:', allFindings.length, 'Gaps:', allGaps.length, 'Recommendations:', allRecs.length);
+    
     // Hide progress
-    document.getElementById('progress').style.display = 'none';
+    const progressEl = document.getElementById('progress');
+    if (progressEl) {
+        progressEl.style.display = 'none';
+    }
     
     // Render results view
     const content = document.getElementById('assessment-content');
+    if (!content) {
+        console.error('Assessment content element not found!');
+        return;
+    }
+    
+    console.log('Building results HTML...');
     
     let html = `
         <div class="results-container">
-            <h2>📊 Assessment Results - Audit 2026</h2>
+            <h2>📊 Risultati Assessment - Audit 2026</h2>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px;">
+                Generato il ${new Date().toLocaleDateString('it-IT')} alle ${new Date().toLocaleTimeString('it-IT')}
+            </p>
             
             <div class="score-summary">
                 <div class="total-score">
-                    <h3>Overall Compliance Score</h3>
+                    <h3>Punteggio Complessivo di Conformità</h3>
                     <div class="score-value">${totalScore}/100</div>
-                    <div class="risk-badge risk-${riskLevel.toLowerCase()}">${riskLevel} RISK</div>
+                    <div class="risk-badge risk-${riskLevel.toLowerCase()}">
+                        ${riskLevel === 'LOW' ? '🟢 RISCHIO BASSO' : 
+                          riskLevel === 'MEDIUM' ? '🟡 RISCHIO MEDIO' : 
+                          '🔴 RISCHIO ALTO'}
+                    </div>
+                    <p style="margin-top: 15px; color: var(--text-secondary);">
+                        ${riskLevel === 'LOW' ? 'Eccellente postura di conformità. Mantenere con audit periodici.' :
+                          riskLevel === 'MEDIUM' ? 'Buone basi ma gap da colmare. Piano d\'azione prioritizzato necessario.' :
+                          'Carenze significative. Azione immediata richiesta per conformità.'}
+                    </p>
                 </div>
                 
                 <div class="area-scores">
                     <div class="area-score">
-                        <strong>Governance</strong>
+                        <div>
+                            <strong>🛡️ Governance</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(govResult.score/20)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${govResult.score}/20</span>
                     </div>
                     <div class="area-score">
-                        <strong>Risk Management</strong>
+                        <div>
+                            <strong>📋 Risk Management</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(riskResult.score/15)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${riskResult.score}/15</span>
                     </div>
                     <div class="area-score">
-                        <strong>Supply Chain</strong>
+                        <div>
+                            <strong>🔗 Supply Chain</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(scResult.score/15)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${scResult.score}/15</span>
                     </div>
                     <div class="area-score">
-                        <strong>Incident Response</strong>
+                        <div>
+                            <strong>🚨 Incident Response</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(irResult.score/15)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${irResult.score}/15</span>
                     </div>
                     <div class="area-score">
-                        <strong>Technical Measures</strong>
+                        <div>
+                            <strong>🔒 Technical Measures</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(techResult.score/20)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${techResult.score}/20</span>
                     </div>
                     <div class="area-score">
-                        <strong>AI & Ethics</strong>
+                        <div>
+                            <strong>🤖 AI & Ethics</strong>
+                            <div class="score-bar">
+                                <div class="score-bar-fill" style="width: ${(aiResult.score/15)*100}%"></div>
+                            </div>
+                        </div>
                         <span>${aiResult.score}/15</span>
                     </div>
                 </div>
@@ -363,16 +431,22 @@ function renderResults() {
             
             ${allFindings.length > 0 ? `
             <div class="results-section">
-                <h3>🔴 Critical Findings (${allFindings.length})</h3>
+                <h3>🔴 Findings Critici (${allFindings.length})</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Problemi e carenze identificati che richiedono attenzione immediata
+                </p>
                 <ul class="findings-list">
                     ${allFindings.map(f => `<li>${f}</li>`).join('')}
                 </ul>
             </div>
-            ` : '<div class="success-message">✅ No critical findings - Excellent compliance posture!</div>'}
+            ` : '<div class="success-message">✅ Nessun finding critico - Eccellente postura di conformità!</div>'}
             
             ${allGaps.length > 0 ? `
             <div class="results-section">
-                <h3>📋 Regulatory Gaps (${allGaps.length})</h3>
+                <h3>📋 Gap Normativi (${allGaps.length})</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Requisiti normativi specifici non soddisfatti - riferimenti legislativi
+                </p>
                 <ul class="gaps-list">
                     ${allGaps.map(g => `<li>${g}</li>`).join('')}
                 </ul>
@@ -381,28 +455,62 @@ function renderResults() {
             
             ${allRecs.length > 0 ? `
             <div class="results-section">
-                <h3>💡 Recommended Actions (${allRecs.length})</h3>
+                <h3>💡 Piano d'Azione Raccomandato (${allRecs.length})</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    Azioni concrete e prioritizzate per migliorare la postura di conformità
+                </p>
                 <ol class="recommendations-list">
-                    ${allRecs.map(r => `<li>${r}</li>`).join('')}
+                    ${allRecs.map((r, idx) => {
+                        const priority = idx < 3 ? '🔴 ALTA PRIORITÀ' : idx < 8 ? '🟡 MEDIA PRIORITÀ' : '🟢 BASSA PRIORITÀ';
+                        return `<li><span class="rec-priority">${priority}</span> ${r}</li>`;
+                    }).join('')}
                 </ol>
             </div>
             ` : ''}
             
             <div class="export-section">
-                <h3>Export Results</h3>
-                <button onclick="exportTextReport()" class="btn-secondary">📄 Download Text Report</button>
-                <button onclick="exportCSVReport()" class="btn-secondary">📊 Download CSV</button>
+                <h3>📥 Esporta Risultati</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Scarica il report completo per documentazione interna e preparazione audit
+                </p>
+                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="exportTextReport()" class="btn-secondary">
+                        📄 Report Testuale (.txt)
+                    </button>
+                    <button onclick="exportCSVReport()" class="btn-secondary">
+                        📊 Dati CSV (.csv)
+                    </button>
+                </div>
             </div>
             
-            <button onclick="startAssessment()" class="btn-primary">🔄 Start New Assessment</button>
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="startAssessment()" class="btn-primary" style="font-size: 1.1rem; padding: 15px 40px;">
+                    🔄 Inizia Nuovo Assessment
+                </button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+                <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                    ⚠️ <strong>Disclaimer:</strong> Questo assessment è uno strumento di valutazione della readiness e del rischio. 
+                    Non costituisce consulenza legale. Le organizzazioni devono consultare esperti legali per la strategia di conformità.
+                </p>
+            </div>
         </div>
     `;
     
+    console.log('Setting HTML content...');
     content.innerHTML = html;
     
     // Hide navigation buttons
-    document.getElementById('btn-back').style.display = 'none';
-    document.getElementById('btn-next').style.display = 'none';
+    const btnBack = document.getElementById('btn-back');
+    const btnNext = document.getElementById('btn-next');
+    if (btnBack) btnBack.style.display = 'none';
+    if (btnNext) btnNext.style.display = 'none';
+    
+    console.log('Results rendered successfully!');
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // Export text report
@@ -485,98 +593,240 @@ function exportTextReport() {
     URL.revokeObjectURL(url);
 }
 
-// Real-time feedback function
+// Real-time feedback function - COMPREHENSIVE for ALL questions
 function showFeedback(questionId) {
     const element = document.getElementById(questionId);
     const feedbackDiv = document.getElementById(`feedback-${questionId}`);
     
-    if (!element || !feedbackDiv) return;
-    
-    const value = element.value;
-    if (!value) {
-        feedbackDiv.innerHTML = '';
+    if (!element || !feedbackDiv) {
+        console.log('Feedback element not found for:', questionId);
         return;
     }
     
-    // Define feedback rules for critical questions
+    const value = element.value;
+    if (!value || value === '' || value === 'Seleziona una risposta...') {
+        feedbackDiv.innerHTML = '';
+        feedbackDiv.style.display = 'none';
+        return;
+    }
+    
+    console.log('Showing feedback for:', questionId, 'Value:', value);
+    
+    // Comprehensive feedback rules for ALL questions
     const feedbackRules = {
-        // Governance
+        // GOVERNANCE
         'board_approval': {
-            good: ['piano completo approvato con delibera CdA', 'piano pluriennale'],
-            warning: ['Parziale', 'datato 2024'],
-            critical: ['Nessuna approvazione']
+            best: 'Implementa piano pluriennale approvato formalmente dal CdA con delibera documentata e review semestrale',
+            good: ['piano completo', 'pluriennale'],
+            warning: ['Parziale', 'datato'],
+            critical: ['Nessuna', 'non ha']
         },
         'executive_training': {
-            good: ['formazione certificata annuale'],
-            warning: ['Informale'],
-            critical: ['Nessuna formazione']
+            best: 'Organizza formazione certificata annuale per tutti i membri del CdA su cyber risk e AI Act con attestati e test',
+            good: ['certificata', 'annuale'],
+            warning: ['Informale', 'occasionale'],
+            critical: ['Nessuna', 'Mai']
         },
         'model_231_updated': {
-            good: ['Sì, aggiornato 2026'],
-            warning: ['Non presente', 'Obsoleto'],
-            critical: ['mai aggiornato', 'non include']
+            best: 'Aggiorna il Modello 231 includendo protocolli specifici per reati informatici, violazioni GDPR e AI Act',
+            good: ['2026', 'completo'],
+            warning: ['2024', 'parziale'],
+            critical: ['non presente', 'mai', 'Obsoleto']
         },
         'roles_assigned': {
-            good: ['formalmente nominati'],
+            best: 'Nomina formalmente CISO, DPO e Responsabile IA con lettera di incarico, reporting line al CdA e budget dedicato',
+            good: ['formalmente nominati', 'tutti i ruoli'],
             warning: ['Parziale', 'Solo DPO'],
-            critical: ['Nessuna nomina']
+            critical: ['Nessuna', 'non nominati']
         },
-        // Technical
+        
+        // RISK MANAGEMENT
+        'unified_asset_inventory': {
+            best: 'Crea inventario unificato che integra asset IT (CMDB), registro trattamenti GDPR e sistemi IA con classificazione criticità',
+            good: ['unificato', 'completo'],
+            warning: ['Parziale', 'solo IT'],
+            critical: ['Nessun', 'non esiste']
+        },
+        'ai_classification': {
+            best: 'Classifica tutti i sistemi IA secondo AI Act (Minimo/Limitato/Alto/Inaccettabile) e esegui valutazione conformità per alto rischio',
+            good: ['classificati formalmente', 'valutazione'],
+            warning: ['Parziale', 'in corso'],
+            critical: ['non classificati', 'presenti ma non']
+        },
+        'dpia_conducted': {
+            best: 'Esegui DPIA per tutti i trattamenti ad alto rischio e aggiornala ogni 2-3 anni o al cambio sostanziale',
+            good: ['recente', 'aggiornata'],
+            warning: ['datata', 'vecchia'],
+            critical: ['Mai', 'non eseguita']
+        },
+        'sbom_available': {
+            best: 'Richiedi SBOM (Software Bill of Materials) a tutti i fornitori e crea SBOM per sviluppi interni con monitoraggio CVE automatico',
+            good: ['completo', 'tutti'],
+            warning: ['Parziale', 'alcuni'],
+            critical: ['Nessun', 'non disponibile']
+        },
+        
+        // SUPPLY CHAIN
+        'ict_supplier_register': {
+            best: 'Crea registro fornitori ICT secondo DORA con: criticità, contratti, SLA, dipendenze, certificazioni, contatti emergenza',
+            good: ['completo', 'formalizzato'],
+            warning: ['Excel', 'lista'],
+            critical: ['Nessun', 'non esiste']
+        },
+        'contract_clauses_2026': {
+            best: 'Aggiorna contratti con clausole: audit rights, incident notification <24h, exit strategy, patch SLA, subcontractor approval',
+            good: ['tutti aggiornati', 'clausole complete'],
+            warning: ['Parziale', 'solo alcuni'],
+            critical: ['standard', 'senza clausole']
+        },
+        'supplier_certifications': {
+            best: 'Richiedi ISO 27001, SOC 2 Type II o attestazioni NIS2 a fornitori critici e verifica annualmente',
+            good: ['richieste e verificate', 'ISO'],
+            warning: ['richieste ma non', 'alcuni'],
+            critical: ['Nessuna', 'non richieste']
+        },
+        'concentration_risk': {
+            best: 'Analizza rischio concentrazione fornitori e definisci strategie mitigazione (fornitori alternativi, multi-cloud)',
+            good: ['analisi', 'strategie'],
+            warning: ['Parziale', 'informale'],
+            critical: ['Nessuna', 'non analizzato']
+        },
+        
+        // INCIDENT RESPONSE
+        'notification_procedure': {
+            best: 'Crea piano incident response con tempistiche: 24h CSIRT, 2-4h ESA (DORA), 72h Garante (GDPR) - testalo annualmente',
+            good: ['piano completo', 'testato'],
+            warning: ['generico', 'non testato'],
+            critical: ['Nessun', 'non esiste']
+        },
+        'severity_classification': {
+            best: 'Definisci criteri oggettivi classificazione incidenti con decision tree e soglie quantitative allineate NIS2/DORA/GDPR',
+            good: ['criteri formali', 'documentati'],
+            warning: ['informali', 'soggettiva'],
+            critical: ['Nessun', 'non definiti']
+        },
+        'emergency_channels': {
+            best: 'Implementa sistema comunicazione crisi out-of-band (Signal, Teams separato, telefoni dedicati) e testalo trimestralmente',
+            good: ['multipli', 'out-of-band'],
+            warning: ['limitati', 'solo Teams'],
+            critical: ['Solo email', 'inadeguati']
+        },
+        
+        // TECHNICAL MEASURES
         'mfa_zerotrust': {
-            good: ['Zero Trust completo'],
-            warning: ['MFA per tutti'],
-            critical: ['solo per VPN', 'Nessuna MFA']
+            best: 'Implementa MFA per TUTTI gli utenti (priorità admin) e avvia Zero Trust architecture con microsegmentazione',
+            good: ['Zero Trust', 'MFA tutti'],
+            warning: ['MFA parziale', 'solo VPN'],
+            critical: ['Nessuna MFA', 'solo password']
         },
         'encryption': {
-            good: ['crittografia completa'],
-            warning: ['Parziale'],
-            critical: ['Nessuna crittografia']
+            best: 'Implementa crittografia at-rest (database/file) e at-transit (TLS 1.3) con key management HSM e rotazione automatica',
+            good: ['completa', 'HSM'],
+            warning: ['Parziale', 'solo alcuni'],
+            critical: ['Nessuna', 'dati in chiaro']
         },
         'vulnerability_management': {
-            good: ['processo automatizzato'],
-            warning: ['Manuale'],
-            critical: ['Nessun processo']
+            best: 'Implementa vulnerability scanning continuo e patch management automatizzato con SLA <7 giorni per CVE critiche',
+            good: ['automatizzato', 'continuo'],
+            warning: ['Manuale', 'periodico'],
+            critical: ['Nessun', 'ad-hoc']
         },
         'immutable_backups': {
-            good: ['WORM testati'],
-            warning: ['Buono'],
-            critical: ['Nessun backup', 'non protetti', 'non testati']
+            best: 'Implementa backup immutabili WORM con regola 3-2-1, testa restore mensile e verifica RTO/RPO documentati',
+            good: ['WORM', 'testati'],
+            warning: ['backup ma non immutabili', 'non testati'],
+            critical: ['Nessun', 'non protetti']
+        },
+        
+        // AI & ETHICS
+        'ai_transparency': {
+            best: 'Implementa notifica chiara e visibile quando utenti interagiscono con IA (banner, disclaimer, info page)',
+            good: ['disclosure chiara', 'sempre visibile'],
+            warning: ['Parziale', 'non sempre'],
+            critical: ['Nessuna', 'utenti ignari']
+        },
+        'training_data_quality': {
+            best: 'Implementa data quality assessment + bias testing per dati addestramento IA con metodologie standardizzate (Fairlearn, AIF360)',
+            good: ['analisi completa', 'bias testing'],
+            warning: ['analisi base', 'no bias'],
+            critical: ['Nessuna', 'non verificati']
+        },
+        'human_oversight': {
+            best: 'Implementa human-in-the-loop OBBLIGATORIO per decisioni significative prese da IA ad alto rischio - no override facile',
+            good: ['obbligatorio', 'sempre presente'],
+            warning: ['solo su richiesta', 'opzionale'],
+            critical: ['completamente automatizzati', 'nessuna sorveglianza']
         }
     };
     
     const rule = feedbackRules[questionId];
-    if (!rule) return;
     
     let feedbackClass = 'feedback-neutral';
     let feedbackIcon = 'ℹ️';
     let feedbackText = '';
+    let bestPractice = '';
     
-    // Check critical
-    if (rule.critical && rule.critical.some(keyword => value.includes(keyword))) {
-        feedbackClass = 'feedback-critical';
-        feedbackIcon = '🔴';
-        feedbackText = '<strong>CRITICO:</strong> Questa risposta indica un gap significativo di conformità. Priorità massima.';
-    }
-    // Check warning
-    else if (rule.warning && rule.warning.some(keyword => value.includes(keyword))) {
-        feedbackClass = 'feedback-warning';
-        feedbackIcon = '🟡';
-        feedbackText = '<strong>ATTENZIONE:</strong> Richiede miglioramento. Implementare azioni correttive a breve termine.';
-    }
-    // Check good
-    else if (rule.good && rule.good.some(keyword => value.includes(keyword))) {
-        feedbackClass = 'feedback-good';
-        feedbackIcon = '🟢';
-        feedbackText = '<strong>OTTIMO:</strong> Risposta conforme alle best practice.';
-    }
-    
-    if (feedbackText) {
-        feedbackDiv.innerHTML = `<div class="${feedbackClass}">${feedbackIcon} ${feedbackText}</div>`;
-        feedbackDiv.style.display = 'block';
+    if (rule) {
+        bestPractice = rule.best;
+        
+        // Check critical
+        if (rule.critical && rule.critical.some(keyword => value.toLowerCase().includes(keyword.toLowerCase()))) {
+            feedbackClass = 'feedback-critical';
+            feedbackIcon = '🔴';
+            feedbackText = '<strong>CRITICO:</strong> Gap significativo di conformità. Azione immediata richiesta.';
+        }
+        // Check warning
+        else if (rule.warning && rule.warning.some(keyword => value.toLowerCase().includes(keyword.toLowerCase()))) {
+            feedbackClass = 'feedback-warning';
+            feedbackIcon = '🟡';
+            feedbackText = '<strong>ATTENZIONE:</strong> Miglioramento necessario a breve termine.';
+        }
+        // Check good
+        else if (rule.good && rule.good.some(keyword => value.toLowerCase().includes(keyword.toLowerCase()))) {
+            feedbackClass = 'feedback-good';
+            feedbackIcon = '🟢';
+            feedbackText = '<strong>OTTIMO:</strong> Conforme alle best practice!';
+            bestPractice = 'Continua a mantenere questo livello di conformità con review periodiche.';
+        }
+        // Default neutral
+        else {
+            feedbackClass = 'feedback-neutral';
+            feedbackIcon = 'ℹ️';
+            feedbackText = '<strong>INFO:</strong> Risposta registrata.';
+        }
     } else {
-        feedbackDiv.innerHTML = '';
-        feedbackDiv.style.display = 'none';
+        // Generic feedback for questions without specific rules
+        if (value.toLowerCase().includes('no') || value.toLowerCase().includes('nessun') || 
+            value.toLowerCase().includes('mai') || value.toLowerCase().includes('assent')) {
+            feedbackClass = 'feedback-critical';
+            feedbackIcon = '🔴';
+            feedbackText = '<strong>CRITICO:</strong> Questa risposta indica una potenziale non conformità.';
+            bestPractice = 'Implementare controlli adeguati secondo le normative NIS2/DORA/GDPR/AI Act applicabili.';
+        } else if (value.toLowerCase().includes('parzial') || value.toLowerCase().includes('informal') ||
+                   value.toLowerCase().includes('alcuni') || value.toLowerCase().includes('limitato')) {
+            feedbackClass = 'feedback-warning';
+            feedbackIcon = '🟡';
+            feedbackText = '<strong>ATTENZIONE:</strong> Implementazione parziale - completare per piena conformità.';
+            bestPractice = 'Formalizzare e completare i processi esistenti con documentazione e test periodici.';
+        } else if (value.toLowerCase().includes('sì') || value.toLowerCase().includes('completo') ||
+                   value.toLowerCase().includes('ottimo') || value.toLowerCase().includes('certificat')) {
+            feedbackClass = 'feedback-good';
+            feedbackIcon = '🟢';
+            feedbackText = '<strong>OTTIMO:</strong> Risposta positiva!';
+            bestPractice = 'Mantenere questo livello con audit periodici.';
+        }
     }
+    
+    let html = `<div class="${feedbackClass}">${feedbackIcon} ${feedbackText}`;
+    if (bestPractice) {
+        html += `<div style="margin-top: 8px; font-size: 0.85rem; opacity: 0.9;">💡 <strong>Best Practice:</strong> ${bestPractice}</div>`;
+    }
+    html += `</div>`;
+    
+    feedbackDiv.innerHTML = html;
+    feedbackDiv.style.display = 'block';
+    
+    console.log('Feedback displayed for:', questionId);
 }
 
 // Export CSV report

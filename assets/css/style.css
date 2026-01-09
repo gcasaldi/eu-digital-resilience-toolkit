@@ -747,15 +747,48 @@ footer a:hover {
     box-shadow: var(--shadow);
 }
 
+.area-score > div {
+    flex: 1;
+}
+
 .area-score strong {
     color: var(--text-primary);
     font-size: 0.95rem;
+    display: block;
+    margin-bottom: 8px;
 }
 
 .area-score span {
     font-size: 1.5rem;
     font-weight: bold;
     color: var(--primary-color);
+    white-space: nowrap;
+    margin-left: 15px;
+}
+
+.score-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 5px;
+}
+
+.score-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
+}
+
+.rec-priority {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 0.85rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-right: 8px;
 }
 
 .results-section {
