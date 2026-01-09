@@ -153,13 +153,14 @@ function renderPhase() {
         
         if (question.type === 'select') {
             const currentValue = assessmentData[question.id] || '';
-            html += `<select id="${question.id}" name="${question.id}" required>`;
+            html += `<select id="${question.id}" name="${question.id}" onchange="showFeedback('${question.id}')" required>`;
             html += `<option value="">Seleziona una risposta...</option>`;
             question.options.forEach(option => {
                 const selected = currentValue === option ? 'selected' : '';
                 html += `<option value="${option}" ${selected}>${option}</option>`;
             });
             html += `</select>`;
+            html += `<div id="feedback-${question.id}" class="feedback-box"></div>`;
         } else if (question.type === 'checkbox') {
             const currentValues = assessmentData[question.id] || [];
             question.options.forEach((option, idx) => {
@@ -482,6 +483,100 @@ function exportTextReport() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// Real-time feedback function
+function showFeedback(questionId) {
+    const element = document.getElementById(questionId);
+    const feedbackDiv = document.getElementById(`feedback-${questionId}`);
+    
+    if (!element || !feedbackDiv) return;
+    
+    const value = element.value;
+    if (!value) {
+        feedbackDiv.innerHTML = '';
+        return;
+    }
+    
+    // Define feedback rules for critical questions
+    const feedbackRules = {
+        // Governance
+        'board_approval': {
+            good: ['piano completo approvato con delibera CdA', 'piano pluriennale'],
+            warning: ['Parziale', 'datato 2024'],
+            critical: ['Nessuna approvazione']
+        },
+        'executive_training': {
+            good: ['formazione certificata annuale'],
+            warning: ['Informale'],
+            critical: ['Nessuna formazione']
+        },
+        'model_231_updated': {
+            good: ['Sì, aggiornato 2026'],
+            warning: ['Non presente', 'Obsoleto'],
+            critical: ['mai aggiornato', 'non include']
+        },
+        'roles_assigned': {
+            good: ['formalmente nominati'],
+            warning: ['Parziale', 'Solo DPO'],
+            critical: ['Nessuna nomina']
+        },
+        // Technical
+        'mfa_zerotrust': {
+            good: ['Zero Trust completo'],
+            warning: ['MFA per tutti'],
+            critical: ['solo per VPN', 'Nessuna MFA']
+        },
+        'encryption': {
+            good: ['crittografia completa'],
+            warning: ['Parziale'],
+            critical: ['Nessuna crittografia']
+        },
+        'vulnerability_management': {
+            good: ['processo automatizzato'],
+            warning: ['Manuale'],
+            critical: ['Nessun processo']
+        },
+        'immutable_backups': {
+            good: ['WORM testati'],
+            warning: ['Buono'],
+            critical: ['Nessun backup', 'non protetti', 'non testati']
+        }
+    };
+    
+    const rule = feedbackRules[questionId];
+    if (!rule) return;
+    
+    let feedbackClass = 'feedback-neutral';
+    let feedbackIcon = 'ℹ️';
+    let feedbackText = '';
+    
+    // Check critical
+    if (rule.critical && rule.critical.some(keyword => value.includes(keyword))) {
+        feedbackClass = 'feedback-critical';
+        feedbackIcon = '🔴';
+        feedbackText = '<strong>CRITICO:</strong> Questa risposta indica un gap significativo di conformità. Priorità massima.';
+    }
+    // Check warning
+    else if (rule.warning && rule.warning.some(keyword => value.includes(keyword))) {
+        feedbackClass = 'feedback-warning';
+        feedbackIcon = '🟡';
+        feedbackText = '<strong>ATTENZIONE:</strong> Richiede miglioramento. Implementare azioni correttive a breve termine.';
+    }
+    // Check good
+    else if (rule.good && rule.good.some(keyword => value.includes(keyword))) {
+        feedbackClass = 'feedback-good';
+        feedbackIcon = '🟢';
+        feedbackText = '<strong>OTTIMO:</strong> Risposta conforme alle best practice.';
+    }
+    
+    if (feedbackText) {
+        feedbackDiv.innerHTML = `<div class="${feedbackClass}">${feedbackIcon} ${feedbackText}</div>`;
+        feedbackDiv.style.display = 'block';
+    } else {
+        feedbackDiv.innerHTML = '';
+        feedbackDiv.style.display = 'none';
+    }
 }
 
 // Export CSV report
