@@ -617,6 +617,18 @@ footer a:hover {
 }
 
 /* Real-time Feedback Styles */
+.help-text {
+    margin-top: 6px;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #1e40af;
+    line-height: 1.5;
+}
+
 .feedback-box {
     margin-top: 8px;
     display: none;

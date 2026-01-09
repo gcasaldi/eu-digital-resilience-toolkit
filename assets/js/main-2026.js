@@ -151,6 +151,11 @@ function renderPhase() {
         html += `<div class="question-group">`;
         html += `<label>${question.label}</label>`;
         
+        // Add help text if available
+        if (question.helpText) {
+            html += `<p class="help-text">💡 ${question.helpText}</p>`;
+        }
+        
         if (question.type === 'select') {
             const currentValue = assessmentData[question.id] || '';
             html += `<select id="${question.id}" name="${question.id}" onchange="showFeedback('${question.id}')" required>`;
