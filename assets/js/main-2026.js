@@ -363,7 +363,7 @@ function renderResults() {
             <div class="score-summary">
                 <div class="total-score">
                     <h3>Punteggio Complessivo di Conformità</h3>
-                    <div class="score-value">${totalScore}/118</div>
+                    <div class="score-value">${totalScore}/130</div>
                     <div class="risk-badge risk-${riskLevel.toLowerCase()}">
                         ${riskLevel === 'LOW' ? '🟢 RISCHIO BASSO' : 
                           riskLevel === 'MEDIUM' ? '🟡 RISCHIO MEDIO' : 
@@ -384,28 +384,28 @@ function renderResults() {
                         <div>
                             <strong>🛡️ Governance</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(govResult.score/25)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(govResult.score/29)*100}%"></div>
                             </div>
                         </div>
-                        <span>${govResult.score}/25</span>
+                        <span>${govResult.score}/29</span>
                     </div>
                     <div class="area-score">
                         <div>
                             <strong>📋 Risk Management</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(riskResult.score/15)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(riskResult.score/19)*100}%"></div>
                             </div>
                         </div>
-                        <span>${riskResult.score}/15</span>
+                        <span>${riskResult.score}/19</span>
                     </div>
                     <div class="area-score">
                         <div>
                             <strong>🔗 Supply Chain</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(scResult.score/20)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(scResult.score/22)*100}%"></div>
                             </div>
                         </div>
-                        <span>${scResult.score}/20</span>
+                        <span>${scResult.score}/22</span>
                     </div>
                     <div class="area-score">
                         <div>
@@ -420,10 +420,10 @@ function renderResults() {
                         <div>
                             <strong>🔒 Technical + Physical</strong>
                             <div class="score-bar">
-                                <div class="score-bar-fill" style="width: ${(techResult.score/25)*100}%"></div>
+                                <div class="score-bar-fill" style="width: ${(techResult.score/27)*100}%"></div>
                             </div>
                         </div>
-                        <span>${techResult.score}/25</span>
+                        <span>${techResult.score}/27</span>
                     </div>
                     <div class="area-score">
                         <div>
@@ -540,15 +540,15 @@ function exportTextReport() {
     report += `Generated: ${new Date().toLocaleString()}\n`;
     report += `=`.repeat(70) + `\n\n`;
     
-    report += `OVERALL COMPLIANCE SCORE: ${totalScore}/118\n`;
+    report += `OVERALL COMPLIANCE SCORE: ${totalScore}/130\n`;
     report += `RISK LEVEL: ${riskLevel}\n\n`;
     
     report += `AREA SCORES:\n`;
-    report += `- Governance & Legal: ${govResult.score}/25\n`;
-    report += `- Risk & Asset Management: ${riskResult.score}/15\n`;
-    report += `- Supply Chain Security: ${scResult.score}/20\n`;
+    report += `- Governance & Legal: ${govResult.score}/29\n`;
+    report += `- Risk & Asset Management: ${riskResult.score}/19\n`;
+    report += `- Supply Chain Security: ${scResult.score}/22\n`;
     report += `- Incident Response: ${irResult.score}/18\n`;
-    report += `- Technical + Physical Security: ${techResult.score}/25\n`;
+    report += `- Technical + Physical Security: ${techResult.score}/27\n`;
     report += `- AI & Ethics: ${aiResult.score}/15\n\n`;
     
     const allFindings = [...govResult.findings, ...riskResult.findings, ...scResult.findings,
@@ -901,13 +901,13 @@ function exportCSVReport() {
     const riskLevel = window.assessmentEngine.calculateRiskLevel(totalScore);
     
     let csv = `Area,Score,Max Score\n`;
-    csv += `Governance & Legal,${govResult.score},25\n`;
-    csv += `Risk & Asset Management,${riskResult.score},15\n`;
-    csv += `Supply Chain Security,${scResult.score},20\n`;
+    csv += `Governance & Legal,${govResult.score},29\n`;
+    csv += `Risk & Asset Management,${riskResult.score},19\n`;
+    csv += `Supply Chain Security,${scResult.score},22\n`;
     csv += `Incident Response,${irResult.score},18\n`;
-    csv += `Technical + Physical Security,${techResult.score},25\n`;
+    csv += `Technical + Physical Security,${techResult.score},27\n`;
     csv += `AI & Ethics,${aiResult.score},15\n`;
-    csv += `TOTAL,${totalScore},118\n`;
+    csv += `TOTAL,${totalScore},130\n`;
     csv += `RISK LEVEL,${riskLevel},\n\n`;
     
     csv += `Question,Response\n`;

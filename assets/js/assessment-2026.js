@@ -1,33 +1,38 @@
-// EU Digital Resilience Toolkit - Comprehensive 2026 Audit Assessment
-// Covers: NIS2, DORA, GDPR, AI Act, Cyber Resilience Act
+// EU Digital Resilience Toolkit - NIS2 Gold Standard Assessment 2026
+// Complete coverage: NIS2, DORA, GDPR, AI Act, CRA, ISO 27001, NIST CSF
 
 // Assessment data storage
 const assessmentData = {
-    // Area 1: Governance
+    // Area 1: Governance (29 points)
     board_approval: '',
     executive_training: '',
     model_231_updated: '',
     roles_assigned: '',
     iso_27001_compliance: '',  // NEW
     nist_csf_adoption: '',       // NEW
+    security_policies_catalog: '',  // NEW - NIS2 Art. 21.2
+    employee_security_training: '',  // NEW - NIS2 Art. 21.2
     
-    // Area 2: Risk Management
+    // Area 2: Risk Management (19 points)
     unified_asset_inventory: '',
     ai_classification: '',
     dpia_conducted: '',
     sbom_available: '',
     risk_assessment_frequency: '',
+    key_personnel_inventory: '',  // NEW - NIS2 Art. 21.2
+    continuous_improvement: '',   // NEW - ISO 27001 / NIS2
     
-    // Area 3: Supply Chain
+    // Area 3: Supply Chain (22 points)
     ict_supplier_register: '',
     contract_clauses_2026: '',
     supplier_certifications: '',
     concentration_risk: '',
     subcontractor_oversight: '',
+    exit_management: '',         // NEW - NIS2 Art. 21.2
     shadow_it_control: '',       // NEW
     byod_policy: '',             // NEW
     
-    // Area 4: Incident Response
+    // Area 4: Incident Response (18 points)
     notification_procedure: '',
     severity_classification: '',
     emergency_channels: '',
@@ -35,10 +40,11 @@ const assessmentData = {
     simulation_exercises: '',
     digital_forensics_capability: '',  // NEW
     
-    // Area 5: Technical Measures
+    // Area 5: Technical + Physical Security (27 points)
     mfa_zerotrust: '',
     encryption: '',
     vulnerability_management: '',
+    patch_management_sla: '',    // NEW - NIS2 Art. 21.2
     immutable_backups: '',
     network_segmentation: '',
     logging_monitoring: '',
@@ -46,7 +52,7 @@ const assessmentData = {
     environmental_controls: '',  // NEW
     business_continuity_rto: '', // NEW - Domanda killer!
     
-    // Area 6: AI & Ethics
+    // Area 6: AI & Ethics (15 points)
     ai_transparency: '',
     training_data_quality: '',
     human_oversight: '',
@@ -206,6 +212,32 @@ const assessmentQuestions = {
                     'Buono - Tutte le 6 funzioni mappate e documentate',
                     'Eccellente - NIST CSF 2.0 completamente integrato con metriche KPI'
                 ]
+            },
+            {
+                id: 'security_policies_catalog',
+                label: '📋 POLICY CATALOG: Catalogo politiche sicurezza - Avete policy scritte e approvate formalmente? (NIS2 Art. 21.2)',
+                helpText: 'Avete un elenco di tutte le politiche di sicurezza scritte e approvate dal management? (Policy password, policy accessi, policy backup, ecc.).',
+                type: 'select',
+                options: [
+                    'No - Nessuna policy scritta',
+                    'Parziale - Alcune policy informali non approvate',
+                    'Buono - Policy principali scritte ma non tutte approvate',
+                    'Ottimo - Catalogo policy completo approvato dal CdA',
+                    'Eccellente - Policy catalog + review annuale + versioning documentato'
+                ]
+            },
+            {
+                id: 'employee_security_training',
+                label: '👥 FORMAZIONE DIPENDENTI: Security awareness - Tutti i dipendenti hanno formazione annuale obbligatoria? (NIS2 Art. 21.2)',
+                helpText: 'Tutti i dipendenti (non solo i dirigenti) ricevono formazione annuale su phishing, password sicure, protezione dati? Con attestati?',
+                type: 'select',
+                options: [
+                    'No - Nessuna formazione per dipendenti',
+                    'Informale - Email periodiche ma no formazione strutturata',
+                    'Base - Formazione annuale generica per tutti',
+                    'Avanzata - Formazione obbligatoria con test di verifica',
+                    'Eccellente - Formazione + simulazioni phishing + attestati + refresh trimestrale'
+                ]
             }
         ]
     },
@@ -278,6 +310,32 @@ const assessmentQuestions = {
                     'Semestrale - Valutazione ogni 6 mesi',
                     'Continua - Monitoraggio continuo con reporting trimestrale al CdA'
                 ]
+            },
+            {
+                id: 'key_personnel_inventory',
+                label: '👤 GESTIONE RISORSE UMANE: Inventario persone chiave - Mappati accessi privilegiati e competenze critiche? (NIS2 Art. 21.2)',
+                helpText: 'Avete un registro di chi ha accessi da amministratore e quali persone hanno competenze critiche? (Se una persona chiave si ammala/lascia l\'azienda, sapete chi può sostituirla?).',
+                type: 'select',
+                options: [
+                    'No - Nessun inventario persone chiave',
+                    'Parziale - Solo lista admin IT generica',
+                    'Buono - Registro accessi privilegiati documentato',
+                    'Ottimo - Inventario completo + skills matrix + backup roles',
+                    'Eccellente - Inventario + succession planning + knowledge management'
+                ]
+            },
+            {
+                id: 'continuous_improvement',
+                label: '🔄 MIGLIORAMENTO CONTINUO: Ciclo PDCA sicurezza - Processo review annuale con metriche KPI? (ISO 27001 / NIS2)',
+                helpText: 'Avete un processo organizzato per migliorare continuamente la sicurezza? Review annuale, KPI misurabili, azioni correttive documentate?',
+                type: 'select',
+                options: [
+                    'No - Nessun processo di miglioramento strutturato',
+                    'Informale - Miglioramenti ad-hoc senza pianificazione',
+                    'Base - Review annuale ma senza KPI formali',
+                    'Buono - Review annuale con KPI + piano azioni correttive',
+                    'Eccellente - Ciclo PDCA completo + dashboard KPI + audit interni trimestrali'
+                ]
             }
         ]
     },
@@ -349,6 +407,19 @@ const assessmentQuestions = {
                     'Buono - Obbligo contrattuale di notifica subcontrattori',
                     'Ottimo - Diritto di approvazione per subcontrattori critici',
                     'Eccellente - Oversight completo con audit diretti su subcontrattori'
+                ]
+            },
+            {
+                id: 'exit_management',
+                label: '🚪 EXIT MANAGEMENT: Offboarding - Processo revoca accessi dipendenti/fornitori che lasciano? (NIS2 Art. 21.2)',
+                helpText: 'Quando un dipendente o fornitore lascia l\'azienda, avete una procedura per revocare immediatamente tutti gli accessi? (Account, badge, VPN, ecc.).',
+                type: 'select',
+                options: [
+                    'No - Nessun processo formale di offboarding',
+                    'Manuale - Revoca accessi su richiesta HR ma no checklist',
+                    'Base - Checklist offboarding ma revoca non immediata',
+                    'Buono - Processo documentato con revoca entro 24h',
+                    'Eccellente - Revoca automatica integrata con HR + audit trimestrale account dormienti'
                 ]
             },
             {
@@ -506,6 +577,19 @@ const assessmentQuestions = {
                     'Base - Scan mensili con patching best-effort',
                     'Buono - Scan settimanali + patching critico <30 giorni',
                     'Eccellente - Scan continui + patching critico <7 giorni + metriche SLA'
+                ]
+            },
+            {
+                id: 'patch_management_sla',
+                label: '⏱️ PATCH MANAGEMENT SLA: Tempi massimi applicazione patch - SLA documentati per vulnerabilità critiche? (NIS2 Art. 21.2)',
+                helpText: 'Avete tempi massimi scritti per applicare le patch di sicurezza? (Es: vulnerabilità critiche entro 7 giorni). Con penali se non rispettate?',
+                type: 'select',
+                options: [
+                    'No - Nessun SLA definito per patching',
+                    'Informale - Best effort ma no tempi garantiti',
+                    'Base - SLA generici (es. "entro 30 giorni")',
+                    'Buono - SLA differenziati per criticità (7/15/30 giorni)',
+                    'Eccellente - SLA stringenti + dashboard tempo medio patch + escalation automatica'
                 ]
             },
             {
@@ -758,12 +842,34 @@ function assessGovernance(data) {
         score -= 1;
         recs.push("Completare mapping NIST CSF e integrare con metriche KPI per misurare maturità");
     }
+    
+    // Security policies catalog (NEW - 2 pts)
+    if (!data.security_policies_catalog || data.security_policies_catalog.includes('Nessuna policy')) {
+        score -= 2;
+        findings.push("Manca catalogo policy di sicurezza formalmente approvate");
+        gaps.push("NIS2 Art. 21.2: Politiche di sicurezza devono essere documentate e approvate");
+        recs.push("CRITICO: Creare catalogo policy scritte (password, accessi, backup, etc) con approvazione CdA");
+    } else if (data.security_policies_catalog.includes('Parziale') || data.security_policies_catalog.includes('non tutte approvate')) {
+        score -= 1;
+        recs.push("Completare approvazione formale di tutte le policy e implementare review annuale");
+    }
+    
+    // Employee security training (NEW - 2 pts)
+    if (!data.employee_security_training || data.employee_security_training.includes('Nessuna formazione')) {
+        score -= 2;
+        findings.push("Dipendenti non ricevono formazione security awareness obbligatoria");
+        gaps.push("NIS2 Art. 21.2(g): Training awareness per tutti i dipendenti obbligatorio");
+        recs.push("CRITICO: Implementare programma formazione annuale obbligatoria per tutti con test e attestati");
+    } else if (data.employee_security_training.includes('Informale')) {
+        score -= 1;
+        recs.push("Formalizzare training con piattaforma e-learning, test verifica e attestati tracciabili");
+    }
 
     return { score, findings, recs, gaps };
 }
 
 function assessRiskManagement(data) {
-    let score = 15;
+    let score = 19;
     let findings = [];
     let recs = [];
     let gaps = [];
@@ -819,12 +925,34 @@ function assessRiskManagement(data) {
         gaps.push("DORA Art. 6 / NIS2 Art. 21: Valutazione rischi ICT periodica obbligatoria");
         recs.push("Implementare processo di risk assessment ICT con frequenza almeno annuale");
     }
+    
+    // Key personnel inventory (NEW - 2 pts)
+    if (!data.key_personnel_inventory || data.key_personnel_inventory.includes('Nessun inventario')) {
+        score -= 2;
+        findings.push("Manca inventario persone chiave con accessi privilegiati");
+        gaps.push("NIS2 Art. 21.2: Gestione risorse umane deve includere mapping competenze critiche");
+        recs.push("CRITICO: Mappare accessi amministratori e competenze critiche + backup roles");
+    } else if (data.key_personnel_inventory.includes('Parziale') || data.key_personnel_inventory.includes('generica')) {
+        score -= 1;
+        recs.push("Completare inventario con skills matrix e succession planning per ruoli critici");
+    }
+    
+    // Continuous improvement (NEW - 2 pts)
+    if (!data.continuous_improvement || data.continuous_improvement.includes('Nessun processo')) {
+        score -= 2;
+        findings.push("Manca processo strutturato di miglioramento continuo");
+        gaps.push("ISO 27001 / NIS2: Ciclo PDCA con KPI e azioni correttive obbligatorio");
+        recs.push("Implementare ciclo PDCA con review annuale, KPI sicurezza e audit interni");
+    } else if (data.continuous_improvement.includes('Informale') || data.continuous_improvement.includes('senza KPI')) {
+        score -= 1;
+        recs.push("Formalizzare processo miglioramento con KPI misurabili e dashboard executive");
+    }
 
     return { score, findings, recs, gaps };
 }
 
 function assessSupplyChain(data) {
-    let score = 15;
+    let score = 22;
     let findings = [];
     let recs = [];
     let gaps = [];
@@ -876,6 +1004,17 @@ function assessSupplyChain(data) {
         findings.push("Nessuna visibilità su subcontrattori fornitori ICT");
         gaps.push("DORA Art. 30.3: Oversight su subcontrattori richiesto");
         recs.push("Inserire clausola obbligo notifica e approvazione subcontrattori critici");
+    }
+    
+    // Exit management (NEW - 2 pts)
+    if (!data.exit_management || data.exit_management.includes('Nessun processo')) {
+        score -= 2;
+        findings.push("Manca processo offboarding - rischio accessi non revocati");
+        gaps.push("NIS2 Art. 21.2(f): Gestione accessi deve includere revoca immediata alla cessazione");
+        recs.push("CRITICO: Implementare checklist offboarding con revoca accessi entro 24h + audit account dormienti");
+    } else if (data.exit_management.includes('Manuale') || data.exit_management.includes('no checklist')) {
+        score -= 1;
+        recs.push("Automatizzare revoca accessi integrandola con sistema HR + alert account inattivi >90 giorni");
     }
     
     // Shadow IT control (NEW - 3 pts)
@@ -1028,6 +1167,17 @@ function assessTechnicalMeasures(data) {
         score -= 1;
         recs.push("Ridurre SLA patching critico a <7 giorni e implementare metriche compliance");
     }
+    
+    // Patch management SLA (NEW - 2 pts)
+    if (!data.patch_management_sla || data.patch_management_sla.includes('Nessun SLA')) {
+        score -= 2;
+        findings.push("Mancano SLA definiti per applicazione patch di sicurezza");
+        gaps.push("NIS2 Art. 21.2(a): Patch management con tempi definiti obbligatorio");
+        recs.push("CRITICO: Definire SLA patch per criticità (7 giorni critical, 15 high, 30 medium) con escalation");
+    } else if (data.patch_management_sla.includes('Informale') || data.patch_management_sla.includes('generici')) {
+        score -= 1;
+        recs.push("Stringere SLA patch critiche e implementare dashboard tempo medio patching");
+    }
 
     // Immutable backups
     if (!data.immutable_backups || data.immutable_backups.includes('Nessun backup') || data.immutable_backups.includes('non protetti')) {
@@ -1176,14 +1326,14 @@ function assessAIEthics(data) {
 }
 
 function calculateRiskLevel(score) {
-    // Nuovo massimo: 25+15+20+18+25+15 = 118 punti
+    // Nuovo massimo: 29+19+22+18+27+15 = 130 punti (NIS2 Gold Standard)
     // Ricalibro soglie proporzionalmente
-    const maxScore = 118;
+    const maxScore = 130;
     const percentage = (score / maxScore) * 100;
     
-    if (percentage >= 85) return "LOW";      // ≥100 punti
-    if (percentage >= 65) return "MEDIUM";   // ≥77 punti  
-    return "HIGH";                            // <77 punti
+    if (percentage >= 85) return "LOW";      // ≥111 punti
+    if (percentage >= 65) return "MEDIUM";   // ≥85 punti  
+    return "HIGH";                            // <85 punti
 }
 
 // Export everything to window
