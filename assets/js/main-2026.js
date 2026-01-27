@@ -1306,6 +1306,26 @@ function showFeedback(questionId) {
             good: ['obbligatorio', 'sempre presente'],
             warning: ['solo su richiesta', 'opzionale'],
             critical: ['completamente automatizzati', 'nessuna sorveglianza']
+        },
+        
+        // CONTINUOUS IMPROVEMENT
+        'continuous_improvement': {
+            best: 'Implementa ciclo PDCA completo (Plan-Do-Check-Act) con dashboard KPI sicurezza, audit interni trimestrali e review annuale management',
+            good: ['Eccellente', 'PDCA completo', 'dashboard KPI', 'audit interni'],
+            warning: ['Base', 'senza KPI', 'Informale'],
+            critical: ['Nessun processo', 'non strutturato']
+        },
+        'key_personnel_inventory': {
+            best: 'Crea inventario completo: utenti privilegiati, competenze critiche, succession planning, knowledge management documentato',
+            good: ['Eccellente', 'succession planning', 'knowledge management'],
+            warning: ['Lista parziale', 'Lista generica'],
+            critical: ['Nessun inventario', 'non mappati']
+        },
+        'risk_assessment_frequency': {
+            best: 'Esegui risk assessment ICT formale ALMENO annuale, meglio semestrale per sistemi critici con metodologia NIST o ISO 27005',
+            good: ['Annuale formale', 'Semestrale'],
+            warning: ['Saltuaria', 'Solo su richiesta'],
+            critical: ['Mai', 'non eseguito']
         }
     };
     
