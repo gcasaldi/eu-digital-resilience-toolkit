@@ -246,6 +246,19 @@ function nextPhase() {
         }
     });
     
+    // Auto-determine sector based on scope selection (Phase 0 - Governance)
+    if (currentPhase === 0 && assessmentData.scope) {
+        const scopeValues = Array.isArray(assessmentData.scope) ? assessmentData.scope.join(' ') : assessmentData.scope;
+        if (scopeValues.includes('DORA')) {
+            assessmentData.sector = 'Financial services';
+        } else if (scopeValues.includes('NIS2')) {
+            assessmentData.sector = 'Critical Infrastructure (NIS2)';
+        } else {
+            assessmentData.sector = 'Other/Mixed';
+        }
+        console.log('Auto-determined sector:', assessmentData.sector);
+    }
+    
     // Validate required fields
     const form = document.getElementById('phase-form');
     if (form && !form.checkValidity()) {

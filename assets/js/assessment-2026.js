@@ -83,43 +83,6 @@ const assessmentQuestions = {
         subtitle: 'NIS2 Art. 20 / DORA Art. 5 / AI Act Art. 16 - CdA & Legal Compliance',
         questions: [
             {
-                id: 'sector',
-                label: 'Settore organizzazione (NIS2 Annex I & II / DORA Art. 2)',
-                helpText: 'In che settore lavorate? Ad esempio: banca, ospedale, energia, trasporti. Ogni settore ha regole diverse.',
-                type: 'select',
-                options: [
-                    'Servizi finanziari (Banche, Assicurazioni, Investimenti)',
-                    'Energia (Elettricità, Gas, Idrogeno)',
-                    'Trasporti (Aereo, Ferroviario, Marittimo)',
-                    'Sanità (Ospedali, Dispositivi medici, Farmaceutico)',
-                    'Infrastrutture digitali (DNS, Cloud, Data center)',
-                    'Pubblica amministrazione (Governo centrale/regionale)',
-                    'Acqua e acque reflue',
-                    'Provider digitali (Marketplace, Motori ricerca, Social network)',
-                    'Spazio',
-                    'Manifatturiero (Prodotti critici)',
-                    'Servizi postali e corrieri',
-                    'Gestione rifiuti',
-                    'Produzione chimica',
-                    'Produzione e distribuzione alimentare',
-                    'Ricerca',
-                    'Altro/Non elencato'
-                ]
-            },
-            {
-                id: 'organization_size',
-                label: 'Dimensione organizzazione',
-                helpText: 'Quante persone lavorano nella vostra azienda e quanto fatturate all\'anno? Questo determina quali leggi si applicano.',
-                type: 'select',
-                options: [
-                    'Microimpresa (<10 dipendenti, <€2M fatturato)',
-                    'Piccola impresa (10-49 dipendenti, €2-10M fatturato)',
-                    'Media impresa (50-249 dipendenti, €10-50M fatturato)',
-                    'Grande impresa (≥250 dipendenti O ≥€50M fatturato)',
-                    'Ente pubblico/PA'
-                ]
-            },
-            {
                 id: 'scope',
                 label: 'Ambito normativo applicabile (seleziona tutti applicabili)',
                 helpText: 'Quali leggi europee riguardano la vostra azienda? Selezionate tutte quelle applicabili (NIS2, DORA, GDPR, AI Act...).',
@@ -133,6 +96,19 @@ const assessmentQuestions = {
                     'AI Act - Utilizzo sistemi IA',
                     'Cyber Resilience Act - Prodotti digitali con componenti digitali',
                     'Non direttamente in scope (conformità volontaria)'
+                ]
+            },
+            {
+                id: 'organization_size',
+                label: 'Dimensione organizzazione',
+                helpText: 'Quante persone lavorano nella vostra azienda e quanto fatturate all\'anno? Questo determina quali leggi si applicano.',
+                type: 'select',
+                options: [
+                    'Microimpresa (<10 dipendenti, <€2M fatturato)',
+                    'Piccola impresa (10-49 dipendenti, €2-10M fatturato)',
+                    'Media impresa (50-249 dipendenti, €10-50M fatturato)',
+                    'Grande impresa (≥250 dipendenti O ≥€50M fatturato)',
+                    'Ente pubblico/PA'
                 ]
             },
             {
