@@ -1429,6 +1429,7 @@ window.assessmentEngine = {
     assessSupplyChain,
     assessIncidentResponse,
     assessTechnical: assessTechnicalMeasures,
+    assessTechnicalMeasures,  // Export also with full name for compatibility
     assessAIEthics,
     calculateRiskLevel
 };
