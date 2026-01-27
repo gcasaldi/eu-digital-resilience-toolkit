@@ -109,7 +109,7 @@ def build_pdf(result: ReportResult) -> bytes:
     pdf.set_font('Arial', 'I', 8)
     pdf.multi_cell(0, 4, 'Disclaimer: This assessment is a readiness and risk evaluation tool. It does not constitute legal advice. Organizations should consult legal counsel for compliance strategy.')
     
-    return pdf.output(dest='S').encode('latin-1')
+    return pdf.output(dest='S')
 
 
 # -----------------------------

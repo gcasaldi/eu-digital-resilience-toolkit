@@ -1458,7 +1458,7 @@ def generate_pdf_report(result: AssessmentResult) -> bytes:
     pdf.ln(3)
     pdf.cell(0, 4, 'EU Digital Resilience Toolkit v1.0 | Framework: NIS2 + DORA', 0, 0, 'C')
     
-    return pdf.output(dest='S').encode('latin-1')
+    return pdf.output(dest='S')
 
 
 # -----------------------------
