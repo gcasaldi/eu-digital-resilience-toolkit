@@ -114,25 +114,9 @@ function updateProgress() {
     }
 }
 
-// Render current phase
+// Render ALL questions in one scrollable page
 function renderPhase() {
-    const { phases, assessmentQuestions, assessmentData, isQuestionApplicable } = window.assessmentEngine;
-    
-    updateProgress();
-    
-    // Check if we're at results phase
-    if (currentPhase === 5) {
-        renderResults();
-        return;
-    }
-    
-    const phase = phases[currentPhase];
-    const phaseQuestions = assessmentQuestions[phase.key];
-    
-    if (!phaseQuestions) {
-        console.error('Phase questions not found:', phase.key);
-        return;
-    }
+    const { assessmentQuestions, assessmentData, isQuestionApplicable } = window.assessmentEngine;
     
     const content = document.getElementById('assessment-content');
     if (!content) {
@@ -140,91 +124,145 @@ function renderPhase() {
         return;
     }
     
+    // Hide progress bar for single-page view
+    const progressEl = document.getElementById('progress');
+    if (progressEl) progressEl.style.display = 'none';
+    
     const selectedScope = assessmentData.scope || [];
     
     let html = `
-        <div class="phase-content">
-            <h2>${phaseQuestions.title}</h2>
-            <p class="phase-subtitle">${phaseQuestions.subtitle}</p>`;
-    
-    // Show scope summary for non-scope phases
-    if (currentPhase > 0 && selectedScope.length > 0) {
-        html += `
-            <div class="scope-summary">
-                <strong>📋 Normative applicabili:</strong> ${selectedScope.join(', ')}
+        <div class="single-page-assessment">
+            <div class="score-header" id="live-score">
+                <h2>📊 Score Corrente: <span id="current-score">0</span>/130 punti</h2>
+                <div class="score-bar">
+                    <div class="score-fill" id="score-fill" style="width: 0%"></div>
+                </div>
             </div>
-        `;
-    }
+    `;
     
-    html += `<form id="phase-form">`;
-    
-    // Filter questions based on applicability
-    const applicableQuestions = phaseQuestions.questions.filter(q => {
-        // Scope selection phase shows all questions
-        if (currentPhase === 0) return true;
-        // Other phases: check applicability using question object
-        return isQuestionApplicable(q, selectedScope);
+    // Scope Selection
+    const scopePhase = assessmentQuestions['scope_selection'];
+    html += `
+        <div class="assessment-section">
+            <h2>${scopePhase.title}</h2>
+            <p class="phase-subtitle">${scopePhase.subtitle}</p>
+    `;
+    scopePhase.questions.forEach(question => {
+        html += renderQuestion(question, assessmentData);
     });
+    html += `</div>`;
     
-    if (applicableQuestions.length === 0 && currentPhase > 0) {
-        html += `
-            <div class="info-box">
-                <p>ℹ️ Nessuna domanda applicabile in questa sezione per le normative selezionate.</p>
-                <p>Premi "Continua" per passare alla sezione successiva.</p>
-            </div>
-        `;
-    }
-    
-    applicableQuestions.forEach(question => {
-        html += `<div class="question-group">`;
-        html += `<label>${question.label}</label>`;
-        
-        // Add help text if available
-        if (question.helpText) {
-            html += `<p class="help-text">💡 ${question.helpText}</p>`;
+    // Governance
+    const govPhase = assessmentQuestions['governance'];
+    html += `<div class="assessment-section"><h2>${govPhase.title}</h2><p class="phase-subtitle">${govPhase.subtitle}</p>`;
+    govPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
         }
-        
-        if (question.type === 'select') {
-            const currentValue = assessmentData[question.id] || '';
-            html += `<select id="${question.id}" name="${question.id}" onchange="showFeedback('${question.id}')" required>`;
-            html += `<option value="">Seleziona una risposta...</option>`;
-            question.options.forEach(option => {
-                const selected = currentValue === option ? 'selected' : '';
-                html += `<option value="${option}" ${selected}>${option}</option>`;
-            });
-            html += `</select>`;
-            html += `<div id="feedback-${question.id}" class="feedback-box"></div>`;
-        } else if (question.type === 'checkbox') {
-            const currentValues = assessmentData[question.id] || [];
-            question.options.forEach((option, idx) => {
-                const checked = currentValues.includes(option) ? 'checked' : '';
-                html += `
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="${question.id}_${idx}" name="${question.id}" value="${option}" ${checked}>
-                        <label for="${question.id}_${idx}">${option}</label>
-                    </div>
-                `;
-            });
-        } else if (question.type === 'textarea') {
-            const currentValue = assessmentData[question.id] || '';
-            html += `<textarea id="${question.id}" name="${question.id}" rows="3">${currentValue}</textarea>`;
-        } else { // text input
-            const currentValue = assessmentData[question.id] || '';
-            html += `<input type="text" id="${question.id}" name="${question.id}" value="${currentValue}" required>`;
-        }
-        
-        html += `</div>`;
     });
+    html += `</div>`;
+    
+    // Risk Management
+    const riskPhase = assessmentQuestions['risk_management'];
+    html += `<div class="assessment-section"><h2>${riskPhase.title}</h2><p class="phase-subtitle">${riskPhase.subtitle}</p>`;
+    riskPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
+        }
+    });
+    html += `</div>`;
+    
+    // Supply Chain
+    const supplyPhase = assessmentQuestions['supply_chain'];
+    html += `<div class="assessment-section"><h2>${supplyPhase.title}</h2><p class="phase-subtitle">${supplyPhase.subtitle}</p>`;
+    supplyPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
+        }
+    });
+    html += `</div>`;
+    
+    // Incident
+    const incidentPhase = assessmentQuestions['incident'];
+    html += `<div class="assessment-section"><h2>${incidentPhase.title}</h2><p class="phase-subtitle">${incidentPhase.subtitle}</p>`;
+    incidentPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
+        }
+    });
+    html += `</div>`;
+    
+    // Technical
+    const techPhase = assessmentQuestions['technical'];
+    html += `<div class="assessment-section"><h2>${techPhase.title}</h2><p class="phase-subtitle">${techPhase.subtitle}</p>`;
+    techPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
+        }
+    });
+    html += `</div>`;
+    
+    // AI Ethics
+    const aiPhase = assessmentQuestions['ai_ethics'];
+    html += `<div class="assessment-section"><h2>${aiPhase.title}</h2><p class="phase-subtitle">${aiPhase.subtitle}</p>`;
+    aiPhase.questions.forEach(question => {
+        if (isQuestionApplicable(question, selectedScope)) {
+            html += renderQuestion(question, assessmentData);
+        }
+    });
+    html += `</div>`;
     
     html += `
-            </form>
+        </div>
+        <div class="final-actions">
+            <button class="btn-primary btn-large" onclick="generateFinalReport()">📊 Genera Report Finale</button>
         </div>
     `;
     
     content.innerHTML = html;
     
-    // Update navigation buttons
-    updateNavigationButtons();
+    // Hide navigation buttons
+    document.getElementById('btn-back').style.display = 'none';
+    document.getElementById('btn-next').style.display = 'none';
+    
+    // Calculate initial score
+    updateLiveScore();
+}
+
+// Render a single question
+function renderQuestion(question, assessmentData) {
+    let html = `<div class="question-group">`;
+    html += `<label>${question.label}</label>`;
+    
+    if (question.helpText) {
+        html += `<p class="help-text">💡 ${question.helpText}</p>`;
+    }
+    
+    if (question.type === 'select') {
+        const currentValue = assessmentData[question.id] || '';
+        html += `<select id="${question.id}" name="${question.id}" onchange="handleAnswerChange('${question.id}')">`;
+        html += `<option value="">Seleziona una risposta...</option>`;
+        question.options.forEach(option => {
+            const selected = currentValue === option ? 'selected' : '';
+            html += `<option value="${option}" ${selected}>${option}</option>`;
+        });
+        html += `</select>`;
+        html += `<div id="feedback-${question.id}" class="feedback-box"></div>`;
+    } else if (question.type === 'checkbox') {
+        const currentValues = assessmentData[question.id] || [];
+        question.options.forEach((option, idx) => {
+            const checked = currentValues.includes(option) ? 'checked' : '';
+            html += `
+                <div class="checkbox-option">
+                    <input type="checkbox" id="${question.id}_${idx}" name="${question.id}" value="${option}" ${checked} onchange="handleCheckboxChange('${question.id}')">
+                    <label for="${question.id}_${idx}">${option}</label>
+                </div>
+            `;
+        });
+    }
+    
+    html += `</div>`;
+    return html;
 }
 
 // Generate final report
@@ -236,8 +274,10 @@ function generateFinalReport() {
     allInputs.forEach(input => {
         if (input.type === 'checkbox') {
             const checkboxes = document.querySelectorAll(`input[name="${input.name}"]:checked`);
-            assessmentData[input.name] = Array.from(checkboxes).map(cb => cb.value);
-        } else {
+            if (checkboxes.length > 0) {
+                assessmentData[input.name] = Array.from(checkboxes).map(cb => cb.value);
+            }
+        } else if (input.value) {
             assessmentData[input.id] = input.value;
         }
     });
@@ -248,6 +288,81 @@ function generateFinalReport() {
 }
 
 // Handle answer change with immediate feedback
+function handleAnswerChange(questionId) {
+    const { assessmentData } = window.assessmentEngine;
+    const element = document.getElementById(questionId);
+    
+    if (element) {
+        assessmentData[questionId] = element.value;
+        
+        // Auto-determine sector
+        if (questionId === 'scope' && assessmentData.scope) {
+            const scopeValues = Array.isArray(assessmentData.scope) ? assessmentData.scope.join(' ') : assessmentData.scope;
+            if (scopeValues.includes('DORA')) {
+                assessmentData.sector = 'Financial services';
+            } else if (scopeValues.includes('NIS2')) {
+                assessmentData.sector = 'Critical Infrastructure (NIS2)';
+            } else {
+                assessmentData.sector = 'Other/Mixed';
+            }
+        }
+        
+        // Show feedback
+        showFeedback(questionId);
+        
+        // Update live score
+        updateLiveScore();
+    }
+}
+
+// Handle checkbox change
+function handleCheckboxChange(questionId) {
+    const { assessmentData } = window.assessmentEngine;
+    const checkboxes = document.querySelectorAll(`input[name="${questionId}"]:checked`);
+    assessmentData[questionId] = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Update live score
+    updateLiveScore();
+}
+
+// Update live score display
+function updateLiveScore() {
+    const { assessmentData, assessGovernance, assessRiskManagement, assessSupplyChain, 
+            assessIncidentResponse, assessTechnical, assessAIEthics } = window.assessmentEngine;
+    
+    // Calculate scores
+    const govResult = assessGovernance(assessmentData);
+    const riskResult = assessRiskManagement(assessmentData);
+    const supplyResult = assessSupplyChain(assessmentData);
+    const incidentResult = assessIncidentResponse(assessmentData);
+    const techResult = assessTechnical(assessmentData);
+    const aiResult = assessAIEthics(assessmentData);
+    
+    const totalScore = govResult.score + riskResult.score + supplyResult.score + 
+                      incidentResult.score + techResult.score + aiResult.score;
+    
+    // Update UI
+    const scoreElement = document.getElementById('current-score');
+    const fillElement = document.getElementById('score-fill');
+    
+    if (scoreElement) {
+        scoreElement.textContent = totalScore;
+    }
+    
+    if (fillElement) {
+        const percentage = (totalScore / 130) * 100;
+        fillElement.style.width = percentage + '%';
+        
+        // Color based on score
+        if (percentage >= 80) {
+            fillElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        } else if (percentage >= 60) {
+            fillElement.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        } else {
+            fillElement.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+        }
+    }
+}
 function handleAnswerChange(questionId) {
     const { assessmentData } = window.assessmentEngine;
     const element = document.getElementById(questionId);
