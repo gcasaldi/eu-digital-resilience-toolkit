@@ -1149,9 +1149,21 @@ function showFeedback(questionId) {
         },
         'nist_csf_adoption': {
             best: 'Mappa tutti i controlli alle 6 funzioni NIST CSF 2.0 (Govern/Identify/Protect/Detect/Respond/Recover) con KPI',
-            good: ['integrato', 'KPI'],
-            warning: ['Parziale', 'documentate'],
-            critical: ['non mappate', 'Conoscenza base']
+            good: ['integrato', 'KPI', 'Eccellente'],
+            warning: ['Parziale', 'documentate', 'Buono'],
+            critical: ['non mappate', 'Conoscenza base', 'No -']
+        },
+        'security_policies_catalog': {
+            best: 'Crea catalogo completo policy sicurezza approvato dal CdA con review annuale e versioning documentato (password, accessi, backup, incident, acceptable use)',
+            good: ['Eccellente', 'review annuale', 'Ottimo'],
+            warning: ['Buono', 'non tutte', 'Parziale'],
+            critical: ['Nessuna policy', 'No -']
+        },
+        'employee_security_training': {
+            best: 'Formazione obbligatoria annuale per TUTTI i dipendenti (phishing simulation, password, data protection) con attestati e test verifica',
+            good: ['Eccellente', 'simulazioni phishing', 'Avanzata'],
+            warning: ['Base', 'annuale generica', 'Informale'],
+            critical: ['Nessuna formazione', 'No -']
         },
         
         // RISK MANAGEMENT
