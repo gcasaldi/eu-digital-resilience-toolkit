@@ -171,6 +171,8 @@ const assessmentQuestions = {
                     'Ottimo - Framework documentato e testato annualmente'
                 ]
             },
+            {
+                id: 'board_approval',
                 label: '✅ POLICY: Il CdA ha approvato formalmente il piano di conformità 2026? (NIS2/DORA/AI Act)',
                 helpText: 'I capi dell\'azienda (Consiglio di Amministrazione) hanno approvato ufficialmente il piano per rispettare le nuove leggi del 2026? Serve una decisione formale scritta.',
                 type: 'select',
