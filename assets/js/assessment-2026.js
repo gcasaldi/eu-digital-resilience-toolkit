@@ -1422,11 +1422,13 @@ window.assessmentEngine = {
     assessmentData,
     phases,
     assessmentQuestions,
+    isQuestionApplicable,
+    estimateQuestionCount,
     assessGovernance,
     assessRiskManagement,
     assessSupplyChain,
     assessIncidentResponse,
-    assessTechnicalMeasures,
+    assessTechnical: assessTechnicalMeasures,
     assessAIEthics,
     calculateRiskLevel
 };
