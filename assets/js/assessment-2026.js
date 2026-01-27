@@ -75,72 +75,43 @@ const phases = [
     { id: 5, name: '5. Results', key: 'results' }
 ];
 
-// Question applicability mapping
-const questionApplicability = {
-    // UNIVERSAL (always shown)
-    'risk_framework': ['ALL'],
-    'board_approval': ['ALL'],
-    'roles_assigned': ['ALL'],
-    'security_policies_catalog': ['ALL'],
-    'employee_security_training': ['ALL'],
-    'unified_asset_inventory': ['ALL'],
-    'vulnerability_management': ['ALL'],
-    'patch_management_sla': ['ALL'],
-    'mfa_zerotrust': ['ALL'],
-    'encryption': ['ALL'],
-    'immutable_backups': ['ALL'],
-    'incident_notification': ['ALL'],
-    
-    // NIS2-specific
-    'csirt_notification': ['NIS2'],
-    'log_retention_18m': ['NIS2'],
-    'supply_chain_security': ['NIS2'],
-    
-    // DORA-specific
-    'cloud_governance': ['DORA'],
-    'ict_supplier_register': ['DORA'],
-    'concentration_risk': ['DORA'],
-    'esa_notification_2h': ['DORA'],
-    'resilience_testing': ['DORA'],
-    
-    // GDPR-specific
-    'dpia_conducted': ['GDPR'],
-    'data_breach_72h': ['GDPR'],
-    'dpo_appointed': ['GDPR'],
-    
-    // AI Act-specific
-    'ai_classification': ['AI Act'],
-    'ai_transparency': ['AI Act'],
-    'human_oversight': ['AI Act'],
-    'training_data_quality': ['AI Act'],
-    
-    // CRA-specific
-    'sbom_available': ['CRA'],
-    'vulnerability_disclosure': ['CRA']
-};
-
 // Check if question is applicable based on selected scope
-function isQuestionApplicable(questionId, selectedScope) {
-    const applicableScopes = questionApplicability[questionId] || ['ALL'];
-    
-    if (applicableScopes.includes('ALL')) {
+// Uses the 'applicability' field directly from each question object
+function isQuestionApplicable(question, selectedScope) {
+    // If no applicability field or empty scope, show all questions
+    if (!question.applicability || selectedScope.length === 0) {
         return true;
     }
     
+    // If question is universally applicable
+    if (question.applicability.includes('ALL')) {
+        return true;
+    }
+    
+    // Check if any selected scope matches question's applicability
     return selectedScope.some(scope => 
-        applicableScopes.some(applicable => scope.includes(applicable))
+        question.applicability.some(applicable => scope.includes(applicable))
     );
 }
 
 // Estimate question count based on scope
+// Dynamically counts questions from all phases based on applicability tags
 function estimateQuestionCount(selectedScope) {
-    let count = 10; // Base universal questions
+    if (selectedScope.length === 0) return 0;
     
-    if (selectedScope.some(s => s.includes('NIS2'))) count += 8;
-    if (selectedScope.some(s => s.includes('DORA'))) count += 7;
-    if (selectedScope.some(s => s.includes('GDPR'))) count += 5;
-    if (selectedScope.some(s => s.includes('AI Act'))) count += 6;
-    if (selectedScope.some(s => s.includes('CRA'))) count += 3;
+    let count = 0;
+    const phasesToCheck = ['governance', 'risk_management', 'supply_chain', 'incident', 'technical', 'ai_ethics'];
+    
+    phasesToCheck.forEach(phaseKey => {
+        const phase = assessmentQuestions[phaseKey];
+        if (phase && phase.questions) {
+            phase.questions.forEach(question => {
+                if (isQuestionApplicable(question, selectedScope)) {
+                    count++;
+                }
+            });
+        }
+    });
     
     return count;
 }
@@ -179,19 +150,6 @@ const assessmentQuestions = {
                     'Grande impresa (≥250 dipendenti O ≥€50M fatturato)',
                     'Ente pubblico/PA'
                 ]
-            },
-            {
-                id: 'organization_size',
-                label: 'Dimensione organizzazione',
-                helpText: 'Quante persone lavorano nella vostra azienda e quanto fatturate all\'anno? Questo determina quali leggi si applicano.',
-                type: 'select',
-                options: [
-                    'Microimpresa (<10 dipendenti, <€2M fatturato)',
-                    'Piccola impresa (10-49 dipendenti, €2-10M fatturato)',
-                    'Media impresa (50-249 dipendenti, €10-50M fatturato)',
-                    'Grande impresa (≥250 dipendenti O ≥€50M fatturato)',
-                    'Ente pubblico/PA'
-                ]
             }
         ]
     },
@@ -216,6 +174,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: Il CdA ha approvato formalmente il piano di conformità 2026? (NIS2/DORA/AI Act)',
                 helpText: 'I capi dell\'azienda (Consiglio di Amministrazione) hanno approvato ufficialmente il piano per rispettare le nuove leggi del 2026? Serve una decisione formale scritta.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna approvazione formale del CdA',
                     'Parziale - Discusso ma non approvato formalmente',
@@ -229,6 +188,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: Formazione obbligatoria - Esistono prove (attestati) che i vertici abbiano ricevuto formazione?',
                 helpText: 'I dirigenti e il management hanno fatto corsi di formazione sulla sicurezza informatica? Servono attestati che provino la frequenza.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna formazione ai vertici',
                     'Informale - Briefing senza attestazione',
@@ -242,6 +202,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: Modello Organizzativo 231 - È stato aggiornato per i nuovi reati informatici e AI Act?',
                 helpText: 'Il Modello 231 (regole per evitare responsabilità penale dell\'azienda) è aggiornato con i nuovi reati informatici e sull\'intelligenza artificiale?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Modello 231 non presente',
                     'No - Modello 231 presente ma mai aggiornato per cyber/IA',
@@ -255,6 +216,7 @@ const assessmentQuestions = {
                 label: '✅ Nomine formali - CISO, DPO, Responsabile sorveglianza IA nominati con atto formale?',
                 helpText: 'Ci sono persone nominate ufficialmente per gestire sicurezza (CISO), privacy (DPO) e intelligenza artificiale? Servono lettere di incarico formali.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna nomina formale',
                     'Parziale - Solo DPO nominato (obbligo GDPR)',
@@ -268,6 +230,7 @@ const assessmentQuestions = {
                 label: '🌐 FRAMEWORK INTERNAZIONALE: ISO/IEC 27001:2022 - L\'azienda ha un SGSI (Sistema Gestione Sicurezza Informazioni)?',
                 helpText: 'Avete un sistema organizzato per gestire la sicurezza informatica secondo lo standard ISO 27001? È come avere un \'libretto delle istruzioni\' certificato.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun SGSI implementato',
                     'In preparazione - SGSI in fase di progettazione',
@@ -281,6 +244,7 @@ const assessmentQuestions = {
                 label: '🌐 FRAMEWORK INTERNAZIONALE: NIST CSF 2.0 - Mappate le 6 funzioni (Govern/Identify/Protect/Detect/Respond/Recover)?',
                 helpText: 'Usate il framework NIST (una checklist americana molto usata) per verificare di aver coperto tutte le aree di sicurezza? Ha 6 funzioni principali da seguire.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Funzioni NIST non mappate',
                     'Conoscenza base - Team conosce NIST ma non applicato',
@@ -294,6 +258,7 @@ const assessmentQuestions = {
                 label: '📋 POLICY CATALOG: Catalogo politiche sicurezza - Avete policy scritte e approvate formalmente? (NIS2 Art. 21.2)',
                 helpText: 'Avete un elenco di tutte le politiche di sicurezza scritte e approvate dal management? (Policy password, policy accessi, policy backup, ecc.).',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessuna policy scritta',
                     'Parziale - Alcune policy informali non approvate',
@@ -307,6 +272,7 @@ const assessmentQuestions = {
                 label: '👥 FORMAZIONE DIPENDENTI: Security awareness - Tutti i dipendenti hanno formazione annuale obbligatoria? (NIS2 Art. 21.2)',
                 helpText: 'Tutti i dipendenti (non solo i dirigenti) ricevono formazione annuale su phishing, password sicure, protezione dati? Con attestati?',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessuna formazione per dipendenti',
                     'Informale - Email periodiche ma no formazione strutturata',
@@ -327,6 +293,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: Inventario unificato - Include hardware, software, dati personali (GDPR) e sistemi IA?',
                 helpText: 'Avete una lista completa di tutti i computer, programmi, dati e sistemi di intelligenza artificiale che usate? Tutto deve essere catalogato in un unico registro.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun inventario asset',
                     'Parziale - Solo inventario IT hardware',
@@ -340,6 +307,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: I sistemi IA sono classificati per livello rischio? (AI Act Art. 6)',
                 helpText: 'I sistemi di intelligenza artificiale che usate sono classificati in base a quanto sono rischiosi? (Basso, medio, alto, inaccettabile rischio).',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'Non applicabile - Nessun sistema IA in uso',
                     'No - Sistemi IA presenti ma non classificati',
@@ -353,6 +321,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: DPIA (Valutazione Impatto Privacy) - Eseguita per trattamenti rischiosi? (GDPR Art. 35)',
                 helpText: 'Avete fatto la DPIA (Valutazione Impatto Privacy)? È un documento che spiega i rischi per la privacy quando usate dati sensibili.',
                 type: 'select',
+                applicability: ['GDPR'],
                 options: [
                     'No - Mai eseguita DPIA',
                     'Parziale - DPIA eseguita ma datata (>3 anni)',
@@ -366,6 +335,7 @@ const assessmentQuestions = {
                 label: '✅ Software Bill of Materials (SBOM) - Disponibile per monitorare vulnerabilità? (CRA)',
                 helpText: 'Avete la \'lista ingredienti\' (SBOM) di ogni software che usate? Serve per sapere se ci sono componenti vulnerabili, come controllare la scadenza del cibo.',
                 type: 'select',
+                applicability: ['CRA'],
                 options: [
                     'No - Nessun SBOM disponibile',
                     'Parziale - SBOM solo per software critico',
@@ -379,6 +349,7 @@ const assessmentQuestions = {
                 label: 'Frequenza valutazione rischi ICT (DORA Art. 6 / NIS2 Art. 21)',
                 helpText: 'Ogni quanto tempo controllate i rischi informatici? (Mai, una volta l\'anno, ogni 6 mesi, continuamente?).',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'Mai - Nessuna valutazione rischi ICT',
                     'Ad-hoc - Solo quando richiesto',
@@ -392,6 +363,7 @@ const assessmentQuestions = {
                 label: '👤 GESTIONE RISORSE UMANE: Inventario persone chiave - Mappati accessi privilegiati e competenze critiche? (NIS2 Art. 21.2)',
                 helpText: 'Avete un registro di chi ha accessi da amministratore e quali persone hanno competenze critiche? (Se una persona chiave si ammala/lascia l\'azienda, sapete chi può sostituirla?).',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessun inventario persone chiave',
                     'Parziale - Solo lista admin IT generica',
@@ -405,6 +377,7 @@ const assessmentQuestions = {
                 label: '🔄 MIGLIORAMENTO CONTINUO: Ciclo PDCA sicurezza - Processo review annuale con metriche KPI? (ISO 27001 / NIS2)',
                 helpText: 'Avete un processo organizzato per migliorare continuamente la sicurezza? Review annuale, KPI misurabili, azioni correttive documentate?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun processo di miglioramento strutturato',
                     'Informale - Miglioramenti ad-hoc senza pianificazione',
@@ -425,6 +398,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: Registro fornitori ICT - Distingue tra fornitori generici e critici? (DORA/NIS2)',
                 helpText: 'Avete un registro di tutti i fornitori di tecnologia (cloud, software, hosting)? Devono essere catalogati e classificati per importanza.',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessun registro fornitori ICT',
                     'Base - Lista Excel generica',
@@ -438,6 +412,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: Clausole contrattuali 2026 - Diritto audit, patch management, exit strategy?',
                 helpText: 'I contratti con i fornitori tecnologici includono clausole specifiche del 2026? (Diritto a ispezionare, aggiornamenti di sicurezza, piano di uscita).',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Contratti standard senza clausole specifiche',
                     'Parziale - Solo alcune clausole in alcuni contratti',
@@ -451,6 +426,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: Certificazioni fornitori - Richieste evidenze ISO 27001, SOC 2, attestazioni NIS2?',
                 helpText: 'Chiedete ai fornitori certificati che dimostrino che sono sicuri? (ISO 27001, SOC 2, ecc.) E li verificate davvero?',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessuna richiesta di certificazioni',
                     'Informale - Richieste ma non verificate',
@@ -464,6 +440,7 @@ const assessmentQuestions = {
                 label: 'Gestione rischio concentrazione fornitori (DORA Art. 28.9)',
                 helpText: 'Dipendete troppo da un singolo fornitore? (Es: tutto su AWS). Avete un piano B se quel fornitore ha problemi?',
                 type: 'select',
+                applicability: ['DORA'],
                 options: [
                     'No - Nessuna analisi concentrazione',
                     'Consapevole - Identificati fornitori principali ma no azioni',
@@ -477,6 +454,7 @@ const assessmentQuestions = {
                 label: 'Visibilità su subcontrattori di quarto livello (DORA Art. 30.3)',
                 helpText: 'I vostri fornitori usano subappaltatori? Sapete chi sono e cosa fanno? Avete controllo sulla catena completa?',
                 type: 'select',
+                applicability: ['DORA'],
                 options: [
                     'No - Nessuna visibilità su subcontrattori',
                     'Parziale - Conoscenza di alcuni subcontrattori principali',
@@ -490,6 +468,7 @@ const assessmentQuestions = {
                 label: '🚪 EXIT MANAGEMENT: Offboarding - Processo revoca accessi dipendenti/fornitori che lasciano? (NIS2 Art. 21.2)',
                 helpText: 'Quando un dipendente o fornitore lascia l\'azienda, avete una procedura per revocare immediatamente tutti gli accessi? (Account, badge, VPN, ecc.).',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessun processo formale di offboarding',
                     'Manuale - Revoca accessi su richiesta HR ma no checklist',
@@ -503,6 +482,7 @@ const assessmentQuestions = {
                 label: '🔍 SHADOW IT: Controllo app/cloud non autorizzati - Sapete quali tool usano i dipendenti? (Cloud non censito = rischio)',
                 helpText: 'Shadow IT = software/app che i dipendenti usano senza permesso (Dropbox personale, WhatsApp per lavoro). Li controllate o bloccate?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun controllo su Shadow IT',
                     'Consapevolezza - Sappiamo che esiste ma non monitoriamo',
@@ -516,6 +496,7 @@ const assessmentQuestions = {
                 label: '📱 BYOD & IoT: Policy BYOD (Bring Your Own Device) + IoT aziendali (stampanti, telecamere, termostati smart)?',
                 helpText: 'BYOD = portare il proprio telefono/PC al lavoro. Avete regole per gestire questi dispositivi personali? E i dispositivi IoT (stampanti smart, telecamere)?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna policy BYOD, dispositivi personali non gestiti',
                     'Policy base - Regole scritte ma non enforced tecnicamente',
@@ -536,6 +517,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: Piano incident response prevede notifica 24h CSIRT (NIS2), poche ore ESA (DORA), 72h Garante (GDPR)?',
                 helpText: 'Se c\'è un attacco informatico, sapete esattamente a chi comunicarlo e in quanto tempo? (CSIRT entro 24h, Garante Privacy entro 72h, ecc.)',
                 type: 'select',
+                applicability: ['NIS2', 'DORA', 'GDPR'],
                 options: [
                     'No - Nessun piano di notifica multicanale',
                     'Parziale - Piano generico senza tempistiche specifiche',
@@ -549,6 +531,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: Criteri classificazione gravità - Quando incidente è "significativo" vs "grave" vs "violazione dati"?',
                 helpText: 'Come decidete se un incidente è \'grave\' o \'molto grave\'? Servono criteri chiari scritti per non sbagliare le notifiche alle autorità.',
                 type: 'select',
+                applicability: ['NIS2', 'DORA', 'GDPR'],
                 options: [
                     'No - Nessun criterio di classificazione',
                     'Generico - Classificazione soggettiva caso per caso',
@@ -562,6 +545,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: Canali comunicazione emergenza - Sistemi protetti fuori rete aziendale per gestire crisi?',
                 helpText: 'Se la rete aziendale è compromessa, come comunicate durante la crisi? Avete telefoni dedicati, app criptate tipo Signal, sistemi fuori dalla rete?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Solo email aziendale',
                     'Parziale - Telefoni cellulari ma no processo formale',
@@ -575,6 +559,7 @@ const assessmentQuestions = {
                 label: 'Registro incidenti di sicurezza - Mantiene storico con analisi root cause? (NIS2 Art. 23)',
                 helpText: 'Tenete un registro di tutti gli incidenti di sicurezza con analisi delle cause? Serve per imparare dagli errori e dimostrare agli auditor.',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessun registro incidenti',
                     'Informale - Incidenti tracciati in ticket generici',
@@ -588,6 +573,7 @@ const assessmentQuestions = {
                 label: 'Esercitazioni e simulazioni cyber crisis (NIS2 Art. 21.2(h))',
                 helpText: 'Fate prove di emergenza informatica? (Come le prove antincendio). Simulate attacchi ransomware per vedere se le procedure funzionano?',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'Mai - Nessuna esercitazione',
                     'Ad-hoc - Solo quando richiesto',
@@ -601,6 +587,7 @@ const assessmentQuestions = {
                 label: '🔬 DIGITAL FORENSICS: Capacità investigative - Potete preservare prove digitali senza inquinare i log?',
                 helpText: 'Se c\'è un attacco, sapete preservare le prove digitali senza inquinare i log? Serve un team con certificazioni forensi e strumenti appositi.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna capacità forense',
                     'Base - Team IT sa fare backup ma senza chain of custody',
@@ -621,6 +608,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: MFA (Autenticazione a due fattori) + Zero Trust - Attivi su tutti accessi?',
                 helpText: 'MFA = doppia verifica per accedere (password + codice SMS/app). Zero Trust = non fidarsi mai, verificare sempre. Usati ovunque?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna MFA implementata',
                     'Parziale - MFA solo per VPN o admin',
@@ -634,6 +622,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: Crittografia - Dati sensibili cifrati "at rest" e "in transit"? (GDPR/NIS2)',
                 helpText: 'Crittografia = cifrare i dati così nessuno li può leggere se rubati. I dati sono cifrati sia quando viaggiano in rete che quando sono salvati sui dischi?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna crittografia sistematica',
                     'Parziale - Solo dati in transito (HTTPS)',
@@ -647,6 +636,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: Vulnerability Management - Processo automatizzato per scan e patch entro tempi certi? (CRA/NIS2)',
                 helpText: 'Cercate regolarmente le falle nei sistemi (scan vulnerabilità) e le correggete velocemente con le patch? Entro quanti giorni?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun processo vulnerability management',
                     'Manuale - Scan manuali sporadici',
@@ -660,6 +650,7 @@ const assessmentQuestions = {
                 label: '⏱️ PATCH MANAGEMENT SLA: Tempi massimi applicazione patch - SLA documentati per vulnerabilità critiche? (NIS2 Art. 21.2)',
                 helpText: 'Avete tempi massimi scritti per applicare le patch di sicurezza? (Es: vulnerabilità critiche entro 7 giorni). Con penali se non rispettate?',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Nessun SLA definito per patching',
                     'Informale - Best effort ma no tempi garantiti',
@@ -673,6 +664,7 @@ const assessmentQuestions = {
                 label: '✅ Business Continuity - Backup immutabili (anti-ransomware) e testati?',
                 helpText: 'I backup sono \'immutabili\' (impossibili da modificare/cancellare dai ransomware)? E li testate per vedere se funzionano davvero?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun backup o backup non protetti',
                     'Base - Backup regolari ma non immutabili',
@@ -686,6 +678,7 @@ const assessmentQuestions = {
                 label: 'Segmentazione rete e microsegmentation (NIS2 Art. 21.2)',
                 helpText: 'La rete è divisa in zone separate (produzione, uffici, ospiti)? Come compartimenti stagni su una nave: se uno allaga, gli altri restano asciutti.',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Rete piatta senza segmentazione',
                     'Base - VLAN di base per separare reti',
@@ -699,6 +692,7 @@ const assessmentQuestions = {
                 label: 'Logging centralizzato e SIEM (NIS2 Art. 21 / DORA Art. 17)',
                 helpText: 'Tutti i log (registrazioni attività) sono raccolti in un sistema centrale (SIEM) che li analizza 24/7 per trovare anomalie?',
                 type: 'select',
+                applicability: ['NIS2', 'DORA'],
                 options: [
                     'No - Log locali non centralizzati',
                     'Parziale - Log aggregati ma no SIEM',
@@ -712,6 +706,7 @@ const assessmentQuestions = {
                 label: '🏢 PHYSICAL SECURITY: Accesso data center/server room - Log accessi fisici? Badge? Telecamere? (spesso dimenticato!)',
                 helpText: 'Chi entra nelle stanze server? C\'è controllo accessi fisico con badge, telecamere, registri? Un intruso fisico può fare danni quanto un hacker.',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessun controllo accessi fisici',
                     'Base - Stanze chiuse a chiave ma senza log',
@@ -725,6 +720,7 @@ const assessmentQuestions = {
                 label: '🌡️ ENVIRONMENTAL: Protezione disastri naturali - Antincendio, anti-allagamento, UPS, generatori?',
                 helpText: 'Le sale server sono protette da incendi, allagamenti, blackout? (Sistemi anti-incendio, UPS, generatori di emergenza, aria condizionata).',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'No - Nessuna protezione ambientale',
                     'Minima - Solo UPS base',
@@ -738,6 +734,7 @@ const assessmentQuestions = {
                 label: '⚡ DOMANDA KILLER: Se stacchiamo Internet OGGI, tra quanto tempo l\'azienda smette di fatturare? (RTO reale)',
                 helpText: '🔥 DOMANDA KILLER: RTO = Recovery Time Objective = tempo massimo di fermo. Se oggi cade Internet, quanto resiste il business prima di fermarsi?',
                 type: 'select',
+                applicability: ['ALL'],
                 options: [
                     'Immediatamente - Business si ferma subito',
                     'Poche ore - Possiamo lavorare 2-4 ore poi stop',
@@ -758,6 +755,7 @@ const assessmentQuestions = {
                 label: 'Sistemi IA attualmente in uso nell\'organizzazione',
                 helpText: 'Quali sistemi di intelligenza artificiale usate? (Chatbot, riconoscimento facciale, decisioni automatiche, GPT, ecc.).',
                 type: 'checkbox',
+                applicability: ['AI Act'],
                 options: [
                     'Nessun sistema IA in uso',
                     'Chatbot e assistenti virtuali',
@@ -776,6 +774,7 @@ const assessmentQuestions = {
                 label: '✅ POLICY: Trasparenza IA - Gli utenti sanno quando interagiscono con IA? (AI Act Art. 52)',
                 helpText: 'Quando una persona parla con un\'IA, sa che sta parlando con una macchina e non con un umano? Deve essere comunicato chiaramente.',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'Non applicabile - Nessun sistema IA rivolto a utenti',
                     'No - Nessuna disclosure agli utenti',
@@ -789,6 +788,7 @@ const assessmentQuestions = {
                 label: '✅ IMPLEMENTAZIONE: Qualità dati addestramento - Dati privi di bias e conformi GDPR? (AI Act Art. 10)',
                 helpText: 'I dati usati per addestrare l\'IA sono di buona qualità e senza pregiudizi (bias)? Se addestri un\'IA con dati sbagliati, darà risposte sbagliate.',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'Non applicabile - Solo IA di terze parti pre-addestrate',
                     'No - Nessuna analisi qualità/bias dati',
@@ -802,6 +802,7 @@ const assessmentQuestions = {
                 label: '✅ LOG: Sorveglianza umana - Garantito intervento umano per decisioni IA ad alto rischio? (AI Act Art. 14)',
                 helpText: 'Per decisioni importanti prese dall\'IA (assunzioni, prestiti, diagnosi), c\'è sempre un umano che controlla e può intervenire?',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'Non applicabile - Nessun sistema IA ad alto rischio',
                     'No - Sistemi completamente automatizzati',
@@ -815,6 +816,7 @@ const assessmentQuestions = {
                 label: 'Valutazione rischi sistemi IA ad alto rischio (AI Act Art. 9)',
                 helpText: 'I sistemi di IA ad alto rischio (es: assumere personale, dare prestiti) sono stati valutati formalmente per i rischi e documentati?',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'Non applicabile - Nessun sistema alto rischio',
                     'No - Sistemi alto rischio non valutati',
@@ -828,6 +830,7 @@ const assessmentQuestions = {
                 label: 'Documentazione tecnica sistemi IA (AI Act Art. 11)',
                 helpText: 'Avete documentazione tecnica completa dei sistemi IA? Come funzionano, con quali dati, quanto sono accurati, quali errori possono fare?',
                 type: 'select',
+                applicability: ['AI Act'],
                 options: [
                     'No - Nessuna documentazione tecnica IA',
                     'Minima - Documentazione di base dai fornitori',

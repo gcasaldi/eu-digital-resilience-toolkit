@@ -162,8 +162,8 @@ function renderPhase() {
     const applicableQuestions = phaseQuestions.questions.filter(q => {
         // Scope selection phase shows all questions
         if (currentPhase === 0) return true;
-        // Other phases: check applicability
-        return !q.applicability || isQuestionApplicable(q.id, selectedScope);
+        // Other phases: check applicability using question object
+        return isQuestionApplicable(q, selectedScope);
     });
     
     if (applicableQuestions.length === 0 && currentPhase > 0) {
