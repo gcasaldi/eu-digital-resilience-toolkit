@@ -943,12 +943,12 @@ async function exportPDFReport() {
     doc.setTextColor(0, 0, 0);
     
     const allRecs = [
-        ...govResult.recommendations,
-        ...riskResult.recommendations,
-        ...scResult.recommendations,
-        ...irResult.recommendations,
-        ...techResult.recommendations,
-        ...aiResult.recommendations
+        ...govResult.recs,
+        ...riskResult.recs,
+        ...scResult.recs,
+        ...irResult.recs,
+        ...techResult.recs,
+        ...aiResult.recs
     ];
     
     const topRecs = allRecs.slice(0, 5);
@@ -1007,12 +1007,12 @@ async function exportRemediationPlan() {
     ];
     
     const allRecs = [
-        ...govResult.recommendations.map(r => ({ area: 'Governance', rec: r, priority: 'HIGH', effort: '5-15 days', owner: 'Board + CISO', budget: '5-10k€', deadline: 'Q1 2026' })),
-        ...riskResult.recommendations.map(r => ({ area: 'Risk Management', rec: r, priority: 'HIGH', effort: '3-10 days', owner: 'Risk Manager', budget: '2-8k€', deadline: 'Q1-Q2 2026' })),
-        ...scResult.recommendations.map(r => ({ area: 'Supply Chain', rec: r, priority: 'MEDIUM', effort: '5-12 days', owner: 'Procurement', budget: '3-12k€', deadline: 'Q2 2026' })),
-        ...irResult.recommendations.map(r => ({ area: 'Incident Response', rec: r, priority: 'CRITICAL', effort: '10-25 days', owner: 'CISO + SOC', budget: '8-20k€', deadline: 'ASAP' })),
-        ...techResult.recommendations.map(r => ({ area: 'Technical', rec: r, priority: 'HIGH', effort: '8-20 days', owner: 'IT Security', budget: '5-15k€', deadline: 'Q1-Q2 2026' })),
-        ...aiResult.recommendations.map(r => ({ area: 'AI Ethics', rec: r, priority: 'MEDIUM', effort: '3-8 days', owner: 'AI Officer', budget: '2-8k€', deadline: 'Q2-Q3 2026' }))
+        ...govResult.recs.map(r => ({ area: 'Governance', rec: r, priority: 'HIGH', effort: '5-15 days', owner: 'Board + CISO', budget: '5-10k€', deadline: 'Q1 2026' })),
+        ...riskResult.recs.map(r => ({ area: 'Risk Management', rec: r, priority: 'HIGH', effort: '3-10 days', owner: 'Risk Manager', budget: '2-8k€', deadline: 'Q1-Q2 2026' })),
+        ...scResult.recs.map(r => ({ area: 'Supply Chain', rec: r, priority: 'MEDIUM', effort: '5-12 days', owner: 'Procurement', budget: '3-12k€', deadline: 'Q2 2026' })),
+        ...irResult.recs.map(r => ({ area: 'Incident Response', rec: r, priority: 'CRITICAL', effort: '10-25 days', owner: 'CISO + SOC', budget: '8-20k€', deadline: 'ASAP' })),
+        ...techResult.recs.map(r => ({ area: 'Technical', rec: r, priority: 'HIGH', effort: '8-20 days', owner: 'IT Security', budget: '5-15k€', deadline: 'Q1-Q2 2026' })),
+        ...aiResult.recs.map(r => ({ area: 'AI Ethics', rec: r, priority: 'MEDIUM', effort: '3-8 days', owner: 'AI Officer', budget: '2-8k€', deadline: 'Q2-Q3 2026' }))
     ];
     
     // Sort by priority
