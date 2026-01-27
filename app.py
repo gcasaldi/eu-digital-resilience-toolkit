@@ -3,6 +3,9 @@
 # Privacy-first, actionable, defensible
 
 import streamlit as st
+from dataclasses import dataclass
+from datetime import datetime
+from fpdf import FPDF
 
 st.set_page_config(
     page_title="EU Digital Resilience Toolkit", 
@@ -10,6 +13,103 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+
+# -----------------------------
+# Data Models for PDF Generation
+# -----------------------------
+@dataclass
+class ReportResult:
+    """Data model for assessment results"""
+    timestamp: str
+    sector: str
+    scope: str
+    total_score: int
+    risk_level: str
+    governance_score: int
+    logging_score: int
+    third_party_score: int
+    incident_score: int
+    findings: list
+    recommendations: list
+
+
+# -----------------------------
+# PDF Generation Function
+# -----------------------------
+def build_pdf(result: ReportResult) -> bytes:
+    """Generate professional PDF report"""
+    
+    pdf = FPDF()
+    pdf.add_page()
+    
+    # Header
+    pdf.set_font('Arial', 'B', 20)
+    pdf.cell(0, 10, 'EU DIGITAL RESILIENCE ASSESSMENT', 0, 1, 'C')
+    pdf.set_font('Arial', '', 10)
+    pdf.cell(0, 5, f'Generated: {result.timestamp}', 0, 1, 'C')
+    pdf.ln(10)
+    
+    # Executive Summary
+    pdf.set_font('Arial', 'B', 14)
+    pdf.cell(0, 10, 'EXECUTIVE SUMMARY', 0, 1, 'L')
+    pdf.set_font('Arial', '', 11)
+    
+    # Risk Score Box
+    risk_color = (76, 175, 80) if result.risk_level == 'LOW' else (255, 152, 0) if result.risk_level == 'MEDIUM' else (244, 67, 54)
+    pdf.set_fill_color(*risk_color)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(0, 10, f'  Total Risk Score: {result.total_score}/100 - Risk Level: {result.risk_level}  ', 0, 1, 'C', True)
+    pdf.set_text_color(0, 0, 0)
+    pdf.ln(5)
+    
+    # Domain Scores
+    pdf.set_font('Arial', 'B', 12)
+    pdf.cell(0, 8, 'Domain Breakdown:', 0, 1, 'L')
+    pdf.set_font('Arial', '', 10)
+    
+    domains = [
+        ('Governance & Scope', result.governance_score),
+        ('Logging & Monitoring', result.logging_score),
+        ('ICT Third-Party Risk', result.third_party_score),
+        ('Incident & Resilience', result.incident_score)
+    ]
+    
+    for domain, score in domains:
+        percentage = int((score / 25) * 100)
+        pdf.cell(80, 6, f'  {domain}:', 0, 0, 'L')
+        pdf.cell(40, 6, f'{score}/25 ({percentage}%)', 0, 1, 'L')
+    
+    pdf.ln(10)
+    
+    # Findings
+    if result.findings:
+        pdf.set_font('Arial', 'B', 12)
+        pdf.cell(0, 8, f'KEY FINDINGS ({len(result.findings)} items)', 0, 1, 'L')
+        pdf.set_font('Arial', '', 9)
+        
+        for i, finding in enumerate(result.findings[:10], 1):  # Limit to first 10
+            pdf.multi_cell(0, 5, f'{i}. {finding}')
+            pdf.ln(2)
+    
+    # Recommendations
+    if result.recommendations:
+        pdf.add_page()
+        pdf.set_font('Arial', 'B', 12)
+        pdf.cell(0, 8, f'RECOMMENDATIONS ({len(result.recommendations)} items)', 0, 1, 'L')
+        pdf.set_font('Arial', '', 9)
+        
+        for i, rec in enumerate(result.recommendations[:15], 1):  # Limit to first 15
+            priority = '[HIGH]' if i <= 3 else '[MEDIUM]' if i <= 8 else '[LOW]'
+            pdf.multi_cell(0, 5, f'{priority} {rec}')
+            pdf.ln(2)
+    
+    # Footer
+    pdf.ln(10)
+    pdf.set_font('Arial', 'I', 8)
+    pdf.multi_cell(0, 4, 'Disclaimer: This assessment is a readiness and risk evaluation tool. It does not constitute legal advice. Organizations should consult legal counsel for compliance strategy.')
+    
+    return pdf.output(dest='S').encode('latin-1')
 
 
 # -----------------------------

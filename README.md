@@ -3,7 +3,9 @@
 **Master Check-list 2026** - Comprehensive compliance assessment for NIS2, DORA, GDPR, AI Act, and Cyber Resilience Act
 
 [![Deploy to GitHub Pages](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/pages.yml/badge.svg)](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/pages.yml)
+[![Test App](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/gcasaldi/eu-digital-resilience-toolkit/actions/workflows/test.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Made with Streamlit](https://img.shields.io/badge/Made%20with-Streamlit-FF4B4B.svg)](https://streamlit.io)
 
 ## 🚀 Live Demo
 
