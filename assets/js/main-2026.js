@@ -330,16 +330,29 @@ function updateLiveScore() {
     const { assessmentData, assessGovernance, assessRiskManagement, assessSupplyChain, 
             assessIncidentResponse, assessTechnical, assessAIEthics } = window.assessmentEngine;
     
-    // Calculate scores
-    const govResult = assessGovernance(assessmentData);
-    const riskResult = assessRiskManagement(assessmentData);
-    const supplyResult = assessSupplyChain(assessmentData);
-    const incidentResult = assessIncidentResponse(assessmentData);
-    const techResult = assessTechnical(assessmentData);
-    const aiResult = assessAIEthics(assessmentData);
+    // Check if any answers have been provided
+    const hasAnswers = Object.keys(assessmentData).some(key => {
+        const value = assessmentData[key];
+        if (Array.isArray(value)) {
+            return value.length > 0;
+        }
+        return value !== '' && value !== null && value !== undefined;
+    });
     
-    const totalScore = govResult.score + riskResult.score + supplyResult.score + 
-                      incidentResult.score + techResult.score + aiResult.score;
+    let totalScore = 0;
+    
+    // Only calculate score if there are answers
+    if (hasAnswers) {
+        const govResult = assessGovernance(assessmentData);
+        const riskResult = assessRiskManagement(assessmentData);
+        const supplyResult = assessSupplyChain(assessmentData);
+        const incidentResult = assessIncidentResponse(assessmentData);
+        const techResult = assessTechnical(assessmentData);
+        const aiResult = assessAIEthics(assessmentData);
+        
+        totalScore = govResult.score + riskResult.score + supplyResult.score + 
+                          incidentResult.score + techResult.score + aiResult.score;
+    }
     
     // Update UI
     const scoreElement = document.getElementById('current-score');
@@ -363,6 +376,7 @@ function updateLiveScore() {
         }
     }
 }
+
 function handleAnswerChange(questionId) {
     const { assessmentData } = window.assessmentEngine;
     const element = document.getElementById(questionId);
@@ -398,45 +412,6 @@ function handleCheckboxChange(questionId) {
     
     // Update live score
     updateLiveScore();
-}
-
-// Update live score display
-function updateLiveScore() {
-    const { assessmentData, assessGovernance, assessRiskManagement, assessSupplyChain, 
-            assessIncidentResponse, assessTechnical, assessAIEthics } = window.assessmentEngine;
-    
-    // Calculate scores
-    const govResult = assessGovernance(assessmentData);
-    const riskResult = assessRiskManagement(assessmentData);
-    const supplyResult = assessSupplyChain(assessmentData);
-    const incidentResult = assessIncidentResponse(assessmentData);
-    const techResult = assessTechnical(assessmentData);
-    const aiResult = assessAIEthics(assessmentData);
-    
-    const totalScore = govResult.score + riskResult.score + supplyResult.score + 
-                      incidentResult.score + techResult.score + aiResult.score;
-    
-    // Update UI
-    const scoreElement = document.getElementById('current-score');
-    const fillElement = document.getElementById('score-fill');
-    
-    if (scoreElement) {
-        scoreElement.textContent = totalScore;
-    }
-    
-    if (fillElement) {
-        const percentage = (totalScore / 130) * 100;
-        fillElement.style.width = percentage + '%';
-        
-        // Color based on score
-        if (percentage >= 80) {
-            fillElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-        } else if (percentage >= 60) {
-            fillElement.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
-        } else {
-            fillElement.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
-        }
-    }
 }
 
 // Navigate to previous phase
