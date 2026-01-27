@@ -772,12 +772,12 @@ async function exportPDFReport() {
     
     // Get assessment results
     const assessmentData = window.assessmentEngine.assessmentData;
-    const govResult = window.assessmentEngine.assessGovernance();
-    const riskResult = window.assessmentEngine.assessRiskManagement();
-    const scResult = window.assessmentEngine.assessSupplyChain();
-    const irResult = window.assessmentEngine.assessIncidentResponse();
-    const techResult = window.assessmentEngine.assessTechnicalMeasures();
-    const aiResult = window.assessmentEngine.assessAIEthics();
+    const govResult = window.assessmentEngine.assessGovernance(assessmentData);
+    const riskResult = window.assessmentEngine.assessRiskManagement(assessmentData);
+    const scResult = window.assessmentEngine.assessSupplyChain(assessmentData);
+    const irResult = window.assessmentEngine.assessIncidentResponse(assessmentData);
+    const techResult = window.assessmentEngine.assessTechnicalMeasures(assessmentData);
+    const aiResult = window.assessmentEngine.assessAIEthics(assessmentData);
     const totalScore = govResult.score + riskResult.score + scResult.score + 
                        irResult.score + techResult.score + aiResult.score;
     const riskLevel = window.assessmentEngine.calculateRiskLevel(totalScore);
@@ -985,12 +985,13 @@ async function exportRemediationPlan() {
     const doc = new jsPDF();
     
     // Get assessment results
-    const govResult = window.assessmentEngine.assessGovernance();
-    const riskResult = window.assessmentEngine.assessRiskManagement();
-    const scResult = window.assessmentEngine.assessSupplyChain();
-    const irResult = window.assessmentEngine.assessIncidentResponse();
-    const techResult = window.assessmentEngine.assessTechnicalMeasures();
-    const aiResult = window.assessmentEngine.assessAIEthics();
+    const { assessmentData } = window.assessmentEngine;
+    const govResult = window.assessmentEngine.assessGovernance(assessmentData);
+    const riskResult = window.assessmentEngine.assessRiskManagement(assessmentData);
+    const scResult = window.assessmentEngine.assessSupplyChain(assessmentData);
+    const irResult = window.assessmentEngine.assessIncidentResponse(assessmentData);
+    const techResult = window.assessmentEngine.assessTechnicalMeasures(assessmentData);
+    const aiResult = window.assessmentEngine.assessAIEthics(assessmentData);
     
     const totalScore = govResult.score + riskResult.score + scResult.score + 
                        irResult.score + techResult.score + aiResult.score;
@@ -1424,6 +1425,12 @@ function showFeedback(questionId) {
             warning: ['backup ma non immutabili', 'non testati'],
             critical: ['Nessun', 'non protetti']
         },
+        'logging_monitoring': {
+            best: 'SIEM enterprise + SOAR + threat intelligence + 24/7 SOC con retention 18+ mesi e correlation rules avanzate',
+            good: ['Eccellente', 'SOAR', '24/7 SOC', 'threat intelligence'],
+            warning: ['SIEM implementato', 'Buono', 'Ottimo'],
+            critical: ['non centralizzati', 'Parziale']
+        },
         'physical_security': {
             best: 'Badge elettronici + biometria + videosorveglianza H24 + mantrap + log accessi correlati con eventi digitali',
             good: ['Biometria', 'monitoraggio H24'],
@@ -1461,6 +1468,12 @@ function showFeedback(questionId) {
             good: ['obbligatorio', 'sempre presente'],
             warning: ['solo su richiesta', 'opzionale'],
             critical: ['completamente automatizzati', 'nessuna sorveglianza']
+        },
+        'ai_documentation': {
+            best: 'Documentazione tecnica completa per tutti sistemi IA: architettura, dataset, accuratezza, bias testing, procedure update',
+            good: ['Completa', 'Doc tecnica', 'bias testing', 'accuratezza'],
+            warning: ['Buona', 'Parziale', 'alcuni sistemi'],
+            critical: ['Nessuna', 'Minima', 'base dai fornitori']
         },
         
         // CONTINUOUS IMPROVEMENT

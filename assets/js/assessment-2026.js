@@ -847,7 +847,7 @@ const assessmentQuestions = {
 
 // Scoring functions
 function assessGovernance(data) {
-    let score = 20;
+    let score = 29;
     let findings = [];
     let recs = [];
     let gaps = [];
@@ -1127,7 +1127,7 @@ function assessSupplyChain(data) {
 }
 
 function assessIncidentResponse(data) {
-    let score = 15;
+    let score = 18;
     let findings = [];
     let recs = [];
     let gaps = [];
@@ -1202,7 +1202,7 @@ function assessIncidentResponse(data) {
 }
 
 function assessTechnicalMeasures(data) {
-    let score = 25;  // Aumentato da 20 a 25 per includere Physical + Environmental + BC
+    let score = 27;  // Aumentato a 27 per raggiungere totale 130 (was 20, then 25)
     let findings = [];
     let recs = [];
     let gaps = [];
