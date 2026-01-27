@@ -1727,19 +1727,112 @@ def assess_incident(data: dict) -> tuple:
     return score, findings, recs, gaps
 
 # -----------------------------
+# Adaptive Questionnaire Logic
+# -----------------------------
+
+def estimate_questions_count(scope: list) -> int:
+    """Estimate total number of questions based on selected scope"""
+    base_questions = 8  # Core governance questions (universal)
+    
+    count = base_questions
+    if any("NIS2" in s for s in scope):
+        count += 15  # NIS2-specific questions
+    if any("DORA" in s for s in scope):
+        count += 12  # DORA-specific questions
+    if any("GDPR" in s for s in scope):
+        count += 6   # GDPR-specific questions
+    if any("AI Act" in s for s in scope):
+        count += 8   # AI Act-specific questions
+    if any("CRA" in s for s in scope):
+        count += 5   # CRA-specific questions
+    
+    return count
+
+def is_question_applicable(question_id: str, scope: list) -> bool:
+    """
+    Determine if a question is applicable based on selected scope.
+    Returns True if question should be shown.
+    """
+    # Question applicability mapping
+    question_scope_map = {
+        # UNIVERSAL (sempre applicabili)
+        'risk_framework': ['ALL'],
+        'board_oversight': ['ALL'],
+        'roles_assigned': ['ALL'],
+        'security_policies': ['ALL'],
+        'employee_training': ['ALL'],
+        'asset_inventory': ['ALL'],
+        'vulnerability_management': ['ALL'],
+        'patch_management': ['ALL'],
+        'mfa': ['ALL'],
+        'encryption': ['ALL'],
+        'backup': ['ALL'],
+        'incident_response_plan': ['ALL'],
+        
+        # NIS2-specific
+        '24h_reporting': ['NIS2'],
+        'csirt_notification': ['NIS2'],
+        'supply_chain_risk': ['NIS2'],
+        'log_retention_18m': ['NIS2'],
+        
+        # DORA-specific
+        'cloud_governance': ['DORA'],
+        'ict_third_party_register': ['DORA'],
+        'concentration_risk': ['DORA'],
+        '2h_esa_notification': ['DORA'],
+        'rto_rpo_defined': ['DORA'],
+        'resilience_testing': ['DORA'],
+        
+        # GDPR-specific
+        'dpia_conducted': ['GDPR'],
+        'data_breach_72h': ['GDPR'],
+        'dpo_appointed': ['GDPR'],
+        'data_mapping': ['GDPR'],
+        'consent_management': ['GDPR'],
+        
+        # AI Act-specific
+        'ai_classification': ['AI Act'],
+        'ai_risk_assessment': ['AI Act'],
+        'ai_transparency': ['AI Act'],
+        'ai_human_oversight': ['AI Act'],
+        'training_data_quality': ['AI Act'],
+        
+        # CRA-specific
+        'sbom_available': ['CRA'],
+        'vulnerability_disclosure': ['CRA'],
+        'security_updates': ['CRA'],
+    }
+    
+    # Get applicable scopes for this question
+    applicable_scopes = question_scope_map.get(question_id, ['ALL'])
+    
+    # If question is universal, always show
+    if 'ALL' in applicable_scopes:
+        return True
+    
+    # Check if any of the question's scopes match user's selection
+    for scope_item in scope:
+        for applicable in applicable_scopes:
+            if applicable in scope_item:
+                return True
+    
+    return False
+
+# -----------------------------
 # UI Components
 # -----------------------------
 
 def show_progress(current_phase: int):
     phases = [
-        "1. Governance & Scope",
-        "2. Logging & Monitoring", 
-        "3. ICT Third-Party Risk",
-        "4. Incident & Resilience",
-        "5. Results & Report"
+        "0. Scope Selection",
+        "1. Governance",
+        "2. Technical Security", 
+        "3. Third-Party Risk",
+        "4. Incident Response",
+        "5. Results"
     ]
     
-    cols = st.columns(5)
+    cols = st.columns(len(phases))
     for i, phase in enumerate(phases):
         with cols[i]:
             if i < current_phase:
@@ -1811,136 +1904,207 @@ def main():
     show_progress(st.session_state.phase)
     st.markdown("---")
     
-    # Phase 0: Governance & Scope (senza domanda settore)
+    # Phase 0: SCOPE SELECTION ONLY (Standalone)
     if st.session_state.phase == 0:
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px; border-radius: 12px; margin-bottom: 25px;'>
-            <h3 style='color: white; margin: 0;'>📋 Fase 1: Governance & Scope</h3>
-            <p style='color: #ffe0e0; margin: 5px 0 0 0;'>Valuta la maturità della governance ICT e del framework di risk management</p>
+        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 12px; margin-bottom: 30px;'>
+            <h3 style='color: white; margin: 0; text-align: center;'>🎯 Fase 0: Configurazione Assessment</h3>
+            <p style='color: #e0e7ff; text-align: center; margin: 10px 0 0 0; font-size: 16px;'>
+                Seleziona le normative applicabili per personalizzare il questionario
+            </p>
         </div>
         """, unsafe_allow_html=True)
         
-        col1, col2 = st.columns(2)
+        st.markdown("### 📋 Ambito Normativo Applicabile")
+        st.info("""
+        💡 **Questionario Adattivo:** Seleziona SOLO le normative che si applicano alla tua organizzazione. 
+        Il questionario si adatterà automaticamente mostrando solo le domande rilevanti!
         
-        with col1:
-            st.markdown("#### 🎯 Applicabilità Normativa")
-            scope = st.multiselect(
-                "Seleziona l'ambito normativo applicabile",
-                ["NIS2 Essential Entity", "NIS2 Important Entity", "DORA Financial Entity", 
-                 "Non direttamente in scope (valutazione volontaria)"],
-                help="💡 NIS2 si applica a settori critici (energia, trasporti, sanità, finance, etc.). DORA è specifico per entità finanziarie."
-            )
-            
-            st.markdown("#### 🏗️ Framework ICT Risk Management")
-            risk_framework = st.select_slider(
-                "Livello di maturità del framework ICT risk management",
-                options=["No framework", "Ad-hoc processes", "Partially documented", 
-                        "Yes, documented and tested"],
-                value="Partially documented",
-                help="💡 Framework conforme: ISO 27001, NIST CSF, COBIT. Deve coprire: identification, protection, detection, response, recovery."
-            )
-            # Real-time feedback
-            show_realtime_feedback('risk_framework', risk_framework)
+        - **NIS2**: Settori critici (energia, trasporti, sanità, PA, etc.)
+        - **DORA**: Entità finanziarie (banche, assicurazioni, pagamenti)
+        - **GDPR**: Trattamento dati personali
+        - **AI Act**: Utilizzo sistemi di intelligenza artificiale
+        - **CRA**: Prodotti digitali con componenti software
+        """)
         
-        with col2:
-            st.markdown("#### 👔 Board-Level Oversight")
-            board_oversight = st.select_slider(
-                "Frequenza di supervisione Board su rischi ICT/cyber",
-                options=["No oversight", "Annual review", "Bi-annual reviews", "Yes, quarterly reviews"],
-                value="Annual review",
-                help="💡 NIS2 e DORA richiedono accountability diretta del Board. Best practice: review trimestrali con KPI/KRI dashboard."
-            )
-            # Real-time feedback
-            show_realtime_feedback('board_oversight', board_oversight)
-            
-            st.markdown("#### ☁️ Cloud Services Usage")
-            cloud_usage = st.multiselect(
-                "Servizi cloud attualmente utilizzati",
-                ["IaaS (AWS, Azure, GCP)", "SaaS (M365, Salesforce, etc.)", 
-                 "PaaS", "Managed security services", "Nessuno"],
-                help="💡 DORA Art. 28 richiede governance formale per cloud services critici."
-            )
-            
-            if cloud_usage and "Nessuno" not in cloud_usage:
-                cloud_governance = st.selectbox(
-                    "Framework di governance cloud",
-                    ["No specific framework", "Informal processes", "Yes, formalized"],
-                    help="💡 Governance cloud include: inventory CSP, risk assessment, exit strategy, concentration risk."
-                )
-                # Real-time feedback
-                show_realtime_feedback('cloud_governance', cloud_governance)
-            else:
-                cloud_governance = "N/A"
+        scope = st.multiselect(
+            "Seleziona tutte le normative applicabili alla tua organizzazione",
+            [
+                "NIS2 Entità Essenziale (>250 dip. O >€50M in settore critico)",
+                "NIS2 Entità Importante (>50 dip. O >€10M in settore importante)",
+                "DORA Entità Finanziaria (Banca, Assicurazione, Pagamenti)",
+                "DORA Fornitore ICT Terzo per entità finanziarie",
+                "GDPR - Trattamento dati personali",
+                "AI Act - Utilizzo sistemi IA",
+                "Cyber Resilience Act - Prodotti digitali con componenti digitali",
+                "Non direttamente in scope (valutazione volontaria)"
+            ],
+            help="💡 Seleziona tutte le opzioni che si applicano. Il questionario si configurerà di conseguenza."
+        )
+        
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("### 🏢 Dimensione Organizzazione")
+        organization_size = st.selectbox(
+            "Dimensione della tua organizzazione",
+            [
+                "Microimpresa (<10 dipendenti, <€2M fatturato)",
+                "Piccola impresa (10-49 dipendenti, €2-10M fatturato)",
+                "Media impresa (50-249 dipendenti, €10-50M fatturato)",
+                "Grande impresa (≥250 dipendenti O ≥€50M fatturato)",
+                "Ente pubblico/PA"
+            ],
+            help="💡 La dimensione determina l'applicabilità di alcune normative."
+        )
         
         # Auto-determine sector based on scope selection
-        if "DORA Financial Entity" in scope:
+        if "DORA" in str(scope):
             sector = "Financial services"
         elif "NIS2" in str(scope):
             sector = "Critical Infrastructure (NIS2)"
         else:
             sector = "Other/Mixed"
         
+        # Store scope configuration
         st.session_state.data.update({
             'sector': sector,
-            'scope': ', '.join(scope) if scope else 'Valutazione volontaria',
-            'risk_framework': risk_framework,
-            'board_oversight': board_oversight,
-            'cloud_usage': [c for c in cloud_usage if c != "Nessuno"],
-            'cloud_governance': cloud_governance
+            'scope': scope,
+            'scope_str': ', '.join(scope) if scope else 'Valutazione volontaria',
+            'organization_size': organization_size
         })
         
-        # Show real-time score estimate with WOW effect
+        # Show selected scope summary
+        if scope:
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='background: #e8f5e9; padding: 20px; border-radius: 10px; border-left: 5px solid #4caf50;'>
+                <h4 style='color: #2e7d32; margin: 0 0 10px 0;'>✅ Configurazione Questionario</h4>
+            """, unsafe_allow_html=True)
+            
+            st.markdown(f"**Normative selezionate:** {len(scope)}")
+            for s in scope:
+                st.markdown(f"• {s}")
+            
+            # Calculate expected number of questions based on scope
+            total_questions = estimate_questions_count(scope)
+            st.markdown(f"\n**Domande previste:** ~{total_questions}")
+            st.markdown(f"**Tempo stimato:** ~{total_questions // 3}-{total_questions // 2} minuti")
+            
+            st.markdown("</div>", unsafe_allow_html=True)
+        
         st.markdown("<br>", unsafe_allow_html=True)
+        if scope and st.button("➡️ Inizia Assessment", type="primary", use_container_width=True):
+            st.session_state.phase = 1
+            st.rerun()
+        elif not scope:
+            st.warning("⚠️ Seleziona almeno una normativa per continuare")
+    
+    # Phase 1: Governance (Adaptive based on scope)
+    elif st.session_state.phase == 1:
+        scope = st.session_state.data.get('scope', [])
+        
         st.markdown("""
-        <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px;'>
-            <h4 style='color: white; margin: 0;'>📊 Anteprima Punteggio Fase 1</h4>
+        <div style='background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 25px; border-radius: 12px; margin-bottom: 25px;'>
+            <h3 style='color: white; margin: 0;'>🛡️ Fase 1: Governance & Compliance</h3>
+            <p style='color: #ffe0e0; margin: 5px 0 0 0;'>Framework di gestione, responsabilità e accountability</p>
         </div>
         """, unsafe_allow_html=True)
         
-        temp_score, _, _, _ = assess_governance(st.session_state.data)
+        col1, col2 = st.columns(2)
         
-        col_a, col_b, col_c = st.columns([3, 1, 1])
-        with col_a:
-            progress_color = "#4caf50" if temp_score >= 20 else "#ff9800" if temp_score >= 15 else "#f44336"
-            st.markdown(f"""
-            <div style='background: white; padding: 15px; border-radius: 10px; margin-top: 10px;'>
-                <div style='color: #666; font-size: 14px; margin-bottom: 5px;'>Punteggio Governance</div>
-                <div style='background: #e0e0e0; height: 30px; border-radius: 15px; overflow: hidden;'>
-                    <div style='background: {progress_color}; width: {int((temp_score/25)*100)}%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;'>
-                        {temp_score}/25 ({int((temp_score/25)*100)}%)
-                    </div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col_b:
-            score_icon = "🟢" if temp_score >= 20 else "🟡" if temp_score >= 15 else "🔴"
-            st.markdown(f"""
-            <div style='background: white; padding: 15px; border-radius: 10px; margin-top: 10px; text-align: center;'>
-                <div style='font-size: 40px;'>{score_icon}</div>
-                <div style='font-weight: bold; color: #333;'>{temp_score}/25</div>
-            </div>
-            """, unsafe_allow_html=True)
-        with col_c:
-            performance = "Eccellente" if temp_score >= 20 else "Buono" if temp_score >= 15 else "Da migliorare"
-            perf_color = "#4caf50" if temp_score >= 20 else "#ff9800" if temp_score >= 15 else "#f44336"
-            st.markdown(f"""
-            <div style='background: white; padding: 15px; border-radius: 10px; margin-top: 10px; text-align: center;'>
-                <div style='color: #666; font-size: 12px;'>Valutazione</div>
-                <div style='font-weight: bold; color: {perf_color};'>{performance}</div>
-            </div>
-            """, unsafe_allow_html=True)
+        with col1:
+            # UNIVERSAL: Risk Framework (always shown)
+            st.markdown("#### 🏗️ Framework ICT Risk Management")
+            risk_framework = st.select_slider(
+                "Livello di maturità del framework ICT risk management",
+                options=["No framework", "Ad-hoc processes", "Partially documented", 
+                        "Yes, documented and tested"],
+                value=st.session_state.data.get('risk_framework', "Partially documented"),
+                help="💡 Framework conforme: ISO 27001, NIST CSF, COBIT. Deve coprire: identification, protection, detection, response, recovery."
+            )
+            show_realtime_feedback('risk_framework', risk_framework)
+            
+            # UNIVERSAL: Board Oversight
+            st.markdown("#### 👔 Board-Level Oversight")
+            board_oversight = st.select_slider(
+                "Frequenza di supervisione Board su rischi ICT/cyber",
+                options=["No oversight", "Annual review", "Bi-annual reviews", "Yes, quarterly reviews"],
+                value=st.session_state.data.get('board_oversight', "Annual review"),
+                help="💡 NIS2 e DORA richiedono accountability diretta del Board. Best practice: review trimestrali con KPI/KRI dashboard."
+            )
+            show_realtime_feedback('board_oversight', board_oversight)
+            
+            # UNIVERSAL: Security Policies
+            st.markdown("#### 📋 Catalogo Policy Sicurezza")
+            security_policies = st.selectbox(
+                "Policy di sicurezza scritte e approvate formalmente",
+                ["No policy", "Informal policies", "Some policies approved", "Complete catalog approved"],
+                index=st.session_state.data.get('security_policies_idx', 0),
+                help="💡 Policy essenziali: password, access control, backup, incident response, acceptable use."
+            )
+            show_realtime_feedback('security_policies', security_policies)
+        
+        with col2:
+            # UNIVERSAL: Roles Assignment
+            st.markdown("#### 👥 Nomine Formali")
+            roles_assigned = st.selectbox(
+                "CISO, DPO, Responsabile IA nominati con atto formale?",
+                ["No formal roles", "Only DPO (GDPR required)", "CISO + DPO", "All roles with Board reporting"],
+                index=st.session_state.data.get('roles_assigned_idx', 0),
+                help="💡 Nomine formali con lettera di incarico, reporting line e budget dedicato."
+            )
+            show_realtime_feedback('roles_assigned', roles_assigned)
+            
+            # UNIVERSAL: Employee Training
+            st.markdown("#### 🎓 Formazione Dipendenti")
+            employee_training = st.selectbox(
+                "Formazione security awareness per tutti i dipendenti",
+                ["No training", "Informal emails", "Annual mandatory training", "Training + phishing simulation"],
+                index=st.session_state.data.get('employee_training_idx', 0),
+                help="💡 Formazione obbligatoria annuale con attestati: phishing, password, data protection."
+            )
+            show_realtime_feedback('employee_training', employee_training)
+            
+            # DORA-specific: Cloud Governance (only if DORA in scope)
+            if any("DORA" in s for s in scope):
+                st.markdown("#### ☁️ Cloud Governance (DORA)")
+                cloud_governance = st.selectbox(
+                    "Framework di governance per cloud services critici",
+                    ["No framework", "Informal", "Formalized"],
+                    index=st.session_state.data.get('cloud_governance_idx', 0),
+                    help="💡 DORA Art. 28: Inventory CSP, risk assessment, exit strategy, concentration risk."
+                )
+                show_realtime_feedback('cloud_governance', cloud_governance)
+            else:
+                cloud_governance = "N/A"
+        
+        st.session_state.data.update({
+            'risk_framework': risk_framework,
+            'board_oversight': board_oversight,
+            'security_policies': security_policies,
+            'roles_assigned': roles_assigned,
+            'employee_training': employee_training,
+            'cloud_governance': cloud_governance
+        })
         
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("➡️ Continua a Logging & Monitoring", type="primary", use_container_width=True):
-            st.session_state.phase = 1
-            st.rerun()
+        col_a, col_b = st.columns([1, 1])
+        with col_a:
+            if st.button("⬅️ Indietro", use_container_width=True):
+                st.session_state.phase = 0
+                st.rerun()
+        with col_b:
+            if st.button("➡️ Continua a Technical Security", type="primary", use_container_width=True):
+                st.session_state.phase = 2
+                st.rerun()
     
-    # Phase 1: Logging
-    elif st.session_state.phase == 1:
+    # Phase 2: Technical Security (Adaptive)
+    elif st.session_state.phase == 2:
+        scope = st.session_state.data.get('scope', [])
+        
         st.markdown("""
         <div style='background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 25px; border-radius: 12px; margin-bottom: 25px;'>
-            <h3 style='color: white; margin: 0;'>📊 Fase 2: Logging, Monitoring & Auditability</h3>
-            <p style='color: #e0f7ff; margin: 5px 0 0 0;'>Valuta visibilità, tracciabilità ed evidenze per audit (overlap NIS2 + DORA)</p>
+            <h3 style='color: white; margin: 0;'>🔐 Fase 2: Technical Security Measures</h3>
+            <p style='color: #e0f7ff; margin: 5px 0 0 0;'>Controlli tecnici, encryption, vulnerability management</p>
         </div>
         """, unsafe_allow_html=True)
         
