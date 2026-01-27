@@ -227,76 +227,101 @@ function renderPhase() {
     updateNavigationButtons();
 }
 
-function updateNavigationButtons() {
-    const btnBack = document.getElementById('btn-back');
-    const btnNext = document.getElementById('btn-next');
+// Generate final report
+function generateFinalReport() {
+    const { assessmentData } = window.assessmentEngine;
     
-    if (!btnBack || !btnNext) {
-        console.error('Navigation buttons not found');
-        return;
-    }
-    
-    if (currentPhase === 0) {
-        btnBack.style.display = 'none';
-    } else {
-        btnBack.style.display = 'inline-block';
-    }
-    
-    if (currentPhase === 5) {
-        btnNext.textContent = 'View Results →';
-    } else {
-        btnNext.textContent = 'Continue →';
-    }
-}
-
-// Navigate to next phase
-function nextPhase() {
-    const { assessmentData, assessmentQuestions, phases } = window.assessmentEngine;
-    const phase = phases[currentPhase];
-    const phaseQuestions = assessmentQuestions[phase.key];
-    
-    if (!phaseQuestions) {
-        currentPhase++;
-        renderPhase();
-        return;
-    }
-    
-    // Save current phase data
-    phaseQuestions.questions.forEach(question => {
-        if (question.type === 'checkbox') {
-            const checkboxes = document.querySelectorAll(`input[name="${question.id}"]:checked`);
-            assessmentData[question.id] = Array.from(checkboxes).map(cb => cb.value);
+    // Save all data
+    const allInputs = document.querySelectorAll('select, input[type="checkbox"]');
+    allInputs.forEach(input => {
+        if (input.type === 'checkbox') {
+            const checkboxes = document.querySelectorAll(`input[name="${input.name}"]:checked`);
+            assessmentData[input.name] = Array.from(checkboxes).map(cb => cb.value);
         } else {
-            const element = document.getElementById(question.id);
-            if (element) {
-                assessmentData[question.id] = element.value;
-            }
+            assessmentData[input.id] = input.value;
         }
     });
     
-    // Auto-determine sector based on scope selection (Phase 0 - Governance)
-    if (currentPhase === 0 && assessmentData.scope) {
-        const scopeValues = Array.isArray(assessmentData.scope) ? assessmentData.scope.join(' ') : assessmentData.scope;
-        if (scopeValues.includes('DORA')) {
-            assessmentData.sector = 'Financial services';
-        } else if (scopeValues.includes('NIS2')) {
-            assessmentData.sector = 'Critical Infrastructure (NIS2)';
-        } else {
-            assessmentData.sector = 'Other/Mixed';
-        }
-        console.log('Auto-determined sector:', assessmentData.sector);
-    }
-    
-    // Validate required fields
-    const form = document.getElementById('phase-form');
-    if (form && !form.checkValidity()) {
-        form.reportValidity();
-        return;
-    }
-    
-    currentPhase++;
-    renderPhase();
+    // Render results
+    renderResults();
     window.scrollTo(0, 0);
+}
+
+// Handle answer change with immediate feedback
+function handleAnswerChange(questionId) {
+    const { assessmentData } = window.assessmentEngine;
+    const element = document.getElementById(questionId);
+    
+    if (element) {
+        assessmentData[questionId] = element.value;
+        
+        // Auto-determine sector
+        if (questionId === 'scope' && assessmentData.scope) {
+            const scopeValues = Array.isArray(assessmentData.scope) ? assessmentData.scope.join(' ') : assessmentData.scope;
+            if (scopeValues.includes('DORA')) {
+                assessmentData.sector = 'Financial services';
+            } else if (scopeValues.includes('NIS2')) {
+                assessmentData.sector = 'Critical Infrastructure (NIS2)';
+            } else {
+                assessmentData.sector = 'Other/Mixed';
+            }
+        }
+        
+        // Show feedback
+        showFeedback(questionId);
+        
+        // Update live score
+        updateLiveScore();
+    }
+}
+
+// Handle checkbox change
+function handleCheckboxChange(questionId) {
+    const { assessmentData } = window.assessmentEngine;
+    const checkboxes = document.querySelectorAll(`input[name="${questionId}"]:checked`);
+    assessmentData[questionId] = Array.from(checkboxes).map(cb => cb.value);
+    
+    // Update live score
+    updateLiveScore();
+}
+
+// Update live score display
+function updateLiveScore() {
+    const { assessmentData, assessGovernance, assessRiskManagement, assessSupplyChain, 
+            assessIncidentResponse, assessTechnical, assessAIEthics } = window.assessmentEngine;
+    
+    // Calculate scores
+    const govResult = assessGovernance(assessmentData);
+    const riskResult = assessRiskManagement(assessmentData);
+    const supplyResult = assessSupplyChain(assessmentData);
+    const incidentResult = assessIncidentResponse(assessmentData);
+    const techResult = assessTechnical(assessmentData);
+    const aiResult = assessAIEthics(assessmentData);
+    
+    const totalScore = govResult.score + riskResult.score + supplyResult.score + 
+                      incidentResult.score + techResult.score + aiResult.score;
+    
+    // Update UI
+    const scoreElement = document.getElementById('current-score');
+    const fillElement = document.getElementById('score-fill');
+    
+    if (scoreElement) {
+        scoreElement.textContent = totalScore;
+    }
+    
+    if (fillElement) {
+        const percentage = (totalScore / 130) * 100;
+        fillElement.style.width = percentage + '%';
+        
+        // Color based on score
+        if (percentage >= 80) {
+            fillElement.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+        } else if (percentage >= 60) {
+            fillElement.style.background = 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)';
+        } else {
+            fillElement.style.background = 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)';
+        }
+    }
 }
 
 // Navigate to previous phase

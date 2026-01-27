@@ -1396,3 +1396,70 @@ footer a:hover {
     margin: 5px 0;
     color: #1565c0;
 }
+
+/* Single page assessment */
+.single-page-assessment {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.score-header {
+    position: sticky;
+    top: 0;
+    background: white;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    z-index: 100;
+}
+
+.score-header h2 {
+    margin: 0 0 15px 0;
+    color: #1e293b;
+}
+
+.score-bar {
+    height: 30px;
+    background: #f1f5f9;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.score-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease, background 0.3s ease;
+    border-radius: 15px;
+}
+
+.assessment-section {
+    background: white;
+    padding: 30px;
+    margin-bottom: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.assessment-section h2 {
+    color: #1e293b;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+.phase-subtitle {
+    color: #64748b;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+.final-actions {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.btn-large {
+    padding: 18px 40px;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
