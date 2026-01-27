@@ -116,12 +116,12 @@ function updateProgress() {
 
 // Render current phase
 function renderPhase() {
-    const { phases, assessmentQuestions, assessmentData } = window.assessmentEngine;
+    const { phases, assessmentQuestions, assessmentData, isQuestionApplicable } = window.assessmentEngine;
     
     updateProgress();
     
     // Check if we're at results phase
-    if (currentPhase === 6) {
+    if (currentPhase === 5) {
         renderResults();
         return;
     }
@@ -140,14 +140,42 @@ function renderPhase() {
         return;
     }
     
+    const selectedScope = assessmentData.scope || [];
+    
     let html = `
         <div class="phase-content">
             <h2>${phaseQuestions.title}</h2>
-            <p class="phase-subtitle">${phaseQuestions.subtitle}</p>
-            <form id="phase-form">
-    `;
+            <p class="phase-subtitle">${phaseQuestions.subtitle}</p>`;
     
-    phaseQuestions.questions.forEach(question => {
+    // Show scope summary for non-scope phases
+    if (currentPhase > 0 && selectedScope.length > 0) {
+        html += `
+            <div class="scope-summary">
+                <strong>📋 Normative applicabili:</strong> ${selectedScope.join(', ')}
+            </div>
+        `;
+    }
+    
+    html += `<form id="phase-form">`;
+    
+    // Filter questions based on applicability
+    const applicableQuestions = phaseQuestions.questions.filter(q => {
+        // Scope selection phase shows all questions
+        if (currentPhase === 0) return true;
+        // Other phases: check applicability
+        return !q.applicability || isQuestionApplicable(q.id, selectedScope);
+    });
+    
+    if (applicableQuestions.length === 0 && currentPhase > 0) {
+        html += `
+            <div class="info-box">
+                <p>ℹ️ Nessuna domanda applicabile in questa sezione per le normative selezionate.</p>
+                <p>Premi "Continua" per passare alla sezione successiva.</p>
+            </div>
+        `;
+    }
+    
+    applicableQuestions.forEach(question => {
         html += `<div class="question-group">`;
         html += `<label>${question.label}</label>`;
         

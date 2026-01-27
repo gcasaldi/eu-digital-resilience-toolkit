@@ -67,25 +67,94 @@ const assessmentData = {
 };
 
 const phases = [
-    { id: 0, name: '1. Governance & Legal', key: 'governance' },
-    { id: 1, name: '2. Risk & Asset Management', key: 'risk_management' },
-    { id: 2, name: '3. Supply Chain', key: 'supply_chain' },
-    { id: 3, name: '4. Incident Response', key: 'incident' },
-    { id: 4, name: '5. Technical Measures', key: 'technical' },
-    { id: 5, name: '6. AI & Ethics', key: 'ai_ethics' },
-    { id: 6, name: '7. Results', key: 'results' }
+    { id: 0, name: '0. Scope Selection', key: 'scope_selection' },
+    { id: 1, name: '1. Governance & Legal', key: 'governance' },
+    { id: 2, name: '2. Technical Security', key: 'technical' },
+    { id: 3, name: '3. Supply Chain', key: 'supply_chain' },
+    { id: 4, name: '4. Incident Response', key: 'incident' },
+    { id: 5, name: '5. Results', key: 'results' }
 ];
 
-// Assessment Questions - 6 Aree Complete
+// Question applicability mapping
+const questionApplicability = {
+    // UNIVERSAL (always shown)
+    'risk_framework': ['ALL'],
+    'board_approval': ['ALL'],
+    'roles_assigned': ['ALL'],
+    'security_policies_catalog': ['ALL'],
+    'employee_security_training': ['ALL'],
+    'unified_asset_inventory': ['ALL'],
+    'vulnerability_management': ['ALL'],
+    'patch_management_sla': ['ALL'],
+    'mfa_zerotrust': ['ALL'],
+    'encryption': ['ALL'],
+    'immutable_backups': ['ALL'],
+    'incident_notification': ['ALL'],
+    
+    // NIS2-specific
+    'csirt_notification': ['NIS2'],
+    'log_retention_18m': ['NIS2'],
+    'supply_chain_security': ['NIS2'],
+    
+    // DORA-specific
+    'cloud_governance': ['DORA'],
+    'ict_supplier_register': ['DORA'],
+    'concentration_risk': ['DORA'],
+    'esa_notification_2h': ['DORA'],
+    'resilience_testing': ['DORA'],
+    
+    // GDPR-specific
+    'dpia_conducted': ['GDPR'],
+    'data_breach_72h': ['GDPR'],
+    'dpo_appointed': ['GDPR'],
+    
+    // AI Act-specific
+    'ai_classification': ['AI Act'],
+    'ai_transparency': ['AI Act'],
+    'human_oversight': ['AI Act'],
+    'training_data_quality': ['AI Act'],
+    
+    // CRA-specific
+    'sbom_available': ['CRA'],
+    'vulnerability_disclosure': ['CRA']
+};
+
+// Check if question is applicable based on selected scope
+function isQuestionApplicable(questionId, selectedScope) {
+    const applicableScopes = questionApplicability[questionId] || ['ALL'];
+    
+    if (applicableScopes.includes('ALL')) {
+        return true;
+    }
+    
+    return selectedScope.some(scope => 
+        applicableScopes.some(applicable => scope.includes(applicable))
+    );
+}
+
+// Estimate question count based on scope
+function estimateQuestionCount(selectedScope) {
+    let count = 10; // Base universal questions
+    
+    if (selectedScope.some(s => s.includes('NIS2'))) count += 8;
+    if (selectedScope.some(s => s.includes('DORA'))) count += 7;
+    if (selectedScope.some(s => s.includes('GDPR'))) count += 5;
+    if (selectedScope.some(s => s.includes('AI Act'))) count += 6;
+    if (selectedScope.some(s => s.includes('CRA'))) count += 3;
+    
+    return count;
+}
+
+// Assessment Questions - Now with Scope Selection first
 const assessmentQuestions = {
-    governance: {
-        title: '🛡️ AREA 1: Governance e Responsabilità Legale',
-        subtitle: 'NIS2 Art. 20 / DORA Art. 5 / AI Act Art. 16 - CdA & Legal Compliance',
+    scope_selection: {
+        title: '🎯 Configurazione Assessment',
+        subtitle: 'Seleziona le normative applicabili per personalizzare il questionario',
         questions: [
             {
                 id: 'scope',
                 label: 'Ambito normativo applicabile (seleziona tutti applicabili)',
-                helpText: 'Quali leggi europee riguardano la vostra azienda? Selezionate tutte quelle applicabili (NIS2, DORA, GDPR, AI Act...).',
+                helpText: 'Quali leggi europee riguardano la vostra azienda? Selezionate tutte quelle applicabili. Il questionario si adatterà automaticamente!',
                 type: 'checkbox',
                 options: [
                     'NIS2 Entità Essenziale (>250 dip. O >€50M in settore critico)',
@@ -112,7 +181,38 @@ const assessmentQuestions = {
                 ]
             },
             {
-                id: 'board_approval',
+                id: 'organization_size',
+                label: 'Dimensione organizzazione',
+                helpText: 'Quante persone lavorano nella vostra azienda e quanto fatturate all\'anno? Questo determina quali leggi si applicano.',
+                type: 'select',
+                options: [
+                    'Microimpresa (<10 dipendenti, <€2M fatturato)',
+                    'Piccola impresa (10-49 dipendenti, €2-10M fatturato)',
+                    'Media impresa (50-249 dipendenti, €10-50M fatturato)',
+                    'Grande impresa (≥250 dipendenti O ≥€50M fatturato)',
+                    'Ente pubblico/PA'
+                ]
+            }
+        ]
+    },
+    
+    governance: {
+        title: '🛡️ AREA 1: Governance e Responsabilità Legale',
+        subtitle: 'NIS2 Art. 20 / DORA Art. 5 / AI Act Art. 16 - Framework e responsabilità',
+        questions: [
+            {
+                id: 'risk_framework',
+                label: '🏗️ Framework ICT Risk Management',
+                helpText: 'Framework conforme: ISO 27001, NIST CSF, COBIT',
+                type: 'select',
+                applicability: ['ALL'],
+                options: [
+                    'No - Nessun framework implementato',
+                    'Parziale - Processi ad-hoc non documentati',
+                    'Buono - Framework parzialmente documentato',
+                    'Ottimo - Framework documentato e testato annualmente'
+                ]
+            },
                 label: '✅ POLICY: Il CdA ha approvato formalmente il piano di conformità 2026? (NIS2/DORA/AI Act)',
                 helpText: 'I capi dell\'azienda (Consiglio di Amministrazione) hanno approvato ufficialmente il piano per rispettare le nuove leggi del 2026? Serve una decisione formale scritta.',
                 type: 'select',
