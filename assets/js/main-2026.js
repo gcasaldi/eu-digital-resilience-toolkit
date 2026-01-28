@@ -854,10 +854,10 @@ async function exportPDFReport() {
         doc.text('🟢 Risk Level: LOW - Strong compliance posture', 25, yPos);
     } else if (riskLevel === 'MEDIUM') {
         doc.setTextColor(...warningColor);
-        doc.text('🟡 Risk Level: MEDIUM - Moderate gaps require attention', 25, yPos);
+        doc.text('Risk Level: MEDIUM - Moderate gaps require attention', 25, yPos);
     } else {
         doc.setTextColor(...dangerColor);
-        doc.text('🔴 Risk Level: HIGH - Critical action required', 25, yPos);
+        doc.text('Risk Level: HIGH - Critical action required', 25, yPos);
     }
     
     yPos += 7;
@@ -869,7 +869,7 @@ async function exportPDFReport() {
     yPos += 20;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('📊 Compliance by Assessment Area', 20, yPos);
+    doc.text('Compliance by Assessment Area', 20, yPos);
     
     yPos += 8;
     const areas = [
@@ -918,7 +918,7 @@ async function exportPDFReport() {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...dangerColor);
-    doc.text('🔴 Critical Findings', 20, yPos);
+    doc.text('Critical Findings', 20, yPos);
     
     yPos += 8;
     doc.setFontSize(9);
@@ -960,7 +960,7 @@ async function exportPDFReport() {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...primaryColor);
-    doc.text('💡 Top 5 Recommendations', 20, yPos);
+    doc.text('Top 5 Recommendations', 20, yPos);
     
     yPos += 8;
     doc.setFontSize(9);
@@ -1055,7 +1055,7 @@ async function exportRemediationPlan() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text('🎯 NIS2 COMPLIANCE REMEDIATION PLAN', 105, 18, { align: 'center' });
+    doc.text('NIS2 COMPLIANCE REMEDIATION PLAN', 105, 18, { align: 'center' });
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text('Actionable Roadmap to Full Compliance', 105, 28, { align: 'center' });
@@ -1081,7 +1081,7 @@ async function exportRemediationPlan() {
     doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('📊 EXECUTIVE SUMMARY', 20, yPos + 7);
+    doc.text('EXECUTIVE SUMMARY', 20, yPos + 7);
     
     yPos += 14;
     doc.setTextColor(0, 0, 0);
@@ -1105,13 +1105,13 @@ async function exportRemediationPlan() {
     
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(...dangerColor);
-    doc.text(`🔴 Critical Priority: ${criticalCount} actions (start immediately)`, 25, yPos);
+    doc.text(`CRITICAL Priority: ${criticalCount} actions (start immediately)`, 25, yPos);
     yPos += 6;
     doc.setTextColor(...warningColor);
-    doc.text(`🟡 High Priority: ${highCount} actions (complete within Q1-Q2 2026)`, 25, yPos);
+    doc.text(`HIGH Priority: ${highCount} actions (complete within Q1-Q2 2026)`, 25, yPos);
     yPos += 6;
     doc.setTextColor(100, 116, 139);
-    doc.text(`🔵 Medium Priority: ${mediumCount} actions (complete within Q3-Q4 2026)`, 25, yPos);
+    doc.text(`MEDIUM Priority: ${mediumCount} actions (complete within Q3-Q4 2026)`, 25, yPos);
     yPos += 10;
     
     doc.setTextColor(255, 255, 255);
@@ -1119,7 +1119,7 @@ async function exportRemediationPlan() {
     doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('🔥 SECTION 1: CRITICAL ACTIONS (START IMMEDIATELY)', 20, yPos + 7);
+    doc.text('SECTION 1: CRITICAL ACTIONS (START IMMEDIATELY)', 20, yPos + 7);
     
     yPos += 14;
     doc.setTextColor(70, 70, 70);
@@ -1143,7 +1143,7 @@ async function exportRemediationPlan() {
     yPos += 12;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('🔥 Priority 1: CRITICAL ACTIONS (Immediate)', 20, yPos);
+    doc.text('Priority 1: CRITICAL ACTIONS (Immediate)', 20, yPos);
     
     yPos += 8;
     const criticalActions = allRecs.filter(r => r.priority === 'CRITICAL');
@@ -1171,7 +1171,7 @@ async function exportRemediationPlan() {
             yPos += 4;
             doc.setFontSize(8);
             doc.setTextColor(80, 80, 80);
-            doc.text(`👤 Owner: ${action.owner} | ⏱️ Effort: ${action.effort} | 💰 Budget: ${action.budget} | 📅 Deadline: ${action.deadline}`, 25, yPos);
+            doc.text(`Owner: ${action.owner} | Effort: ${action.effort} | Budget: ${action.budget} | Deadline: ${action.deadline}`, 25, yPos);
             yPos += 7;
             
             // Add detailed explanation if available
@@ -1182,12 +1182,12 @@ async function exportRemediationPlan() {
                     doc.setFont('helvetica', 'italic');
                     doc.setTextColor(50, 50, 50);
                     
-                    const whyLines = doc.splitTextToSize(`💡 Perché: ${explanation.why}`, 165);
+                    const whyLines = doc.splitTextToSize(`Perche': ${explanation.why}`, 165);
                     doc.text(whyLines, 25, yPos);
                     yPos += whyLines.length * 3.5;
                     
                     yPos += 3;
-                    const howLines = doc.splitTextToSize(`🔧 Come: ${explanation.how}`, 165);
+                    const howLines = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
                     doc.text(howLines, 25, yPos);
                     yPos += howLines.length * 3.5;
                 }
@@ -1207,7 +1207,7 @@ async function exportRemediationPlan() {
     doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('🟡 SECTION 2: HIGH PRIORITY ACTIONS (Q1-Q2 2026)', 20, yPos + 7);
+    doc.text('SECTION 2: HIGH PRIORITY ACTIONS (Q1-Q2 2026)', 20, yPos + 7);
     
     yPos += 14;
     doc.setTextColor(70, 70, 70);
@@ -1223,7 +1223,7 @@ async function exportRemediationPlan() {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
-    doc.text('🔴 Priority 2: HIGH PRIORITY ACTIONS', 20, yPos);
+    doc.text('Priority 2: HIGH PRIORITY ACTIONS', 20, yPos);
     
     yPos += 8;
     const highActions = allRecs.filter(r => r.priority === 'HIGH').slice(0, 10); // Top 10
@@ -1250,7 +1250,7 @@ async function exportRemediationPlan() {
         yPos += 4;
         doc.setFontSize(8);
         doc.setTextColor(80, 80, 80);
-        doc.text(`👤 ${action.owner} | ⏱️ ${action.effort} | 💰 ${action.budget} | 📅 ${action.deadline}`, 25, yPos);
+        doc.text(`Owner: ${action.owner} | Effort: ${action.effort} | Budget: ${action.budget} | Deadline: ${action.deadline}`, 25, yPos);
         yPos += 7;
         
         // Add detailed explanation if available
@@ -1261,12 +1261,12 @@ async function exportRemediationPlan() {
                 doc.setFont('helvetica', 'italic');
                 doc.setTextColor(50, 50, 50);
                 
-                const whyText = doc.splitTextToSize(`💡 Perché: ${explanation.why}`, 165);
+                const whyText = doc.splitTextToSize(`Perche': ${explanation.why}`, 165);
                 doc.text(whyText, 25, yPos);
                 yPos += whyText.length * 3.5;
                 
                 yPos += 3;
-                const howText = doc.splitTextToSize(`🔧 Come: ${explanation.how}`, 165);
+                const howText = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
                 doc.text(howText, 25, yPos);
                 yPos += howText.length * 3.5;
             }
@@ -1283,7 +1283,7 @@ async function exportRemediationPlan() {
     doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('⚡ SECTION 3: QUICK WINS (30-60 Days)', 20, yPos + 7);
+    doc.text('SECTION 3: QUICK WINS (30-60 Days)', 20, yPos + 7);
     
     yPos += 14;
     doc.setTextColor(70, 70, 70);
@@ -1329,7 +1329,7 @@ async function exportRemediationPlan() {
     doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('📅 SECTION 4: IMPLEMENTATION TIMELINE & ROADMAP', 20, yPos + 7);
+    doc.text('SECTION 4: IMPLEMENTATION TIMELINE & ROADMAP', 20, yPos + 7);
     
     yPos += 14;
     doc.setTextColor(70, 70, 70);
@@ -1362,7 +1362,7 @@ async function exportRemediationPlan() {
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(...primaryColor);
-    doc.text('📅 Suggested Implementation Timeline', 20, yPos);
+    doc.text('Suggested Implementation Timeline', 20, yPos);
     
     yPos += 8;
     doc.setFontSize(9);
