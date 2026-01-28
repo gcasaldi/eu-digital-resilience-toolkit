@@ -1024,7 +1024,7 @@ async function exportRemediationPlan() {
     
     // Collect all gaps and recommendations
     const allGaps = [
-        ...govResult.gaps.map(g => ({ area: 'Governance', gap: g, priority: 'HIGH', effort: '10-20 days', owner: 'CISO + Legal', budget: '5-15k€' })),
+        ...govResult.gaps.map(g => ({ area: 'Governance', gap: g, priority: 'HIGH', owner: 'CISO + Legal',  })),
         ...riskResult.gaps.map(g => ({ area: 'Risk Management', gap: g, priority: 'HIGH', effort: '5-10 days', owner: 'Risk Manager', budget: '3-8k€' })),
         ...scResult.gaps.map(g => ({ area: 'Supply Chain', gap: g, priority: 'MEDIUM', effort: '10-15 days', owner: 'Procurement + IT', budget: '5-12k€' })),
         ...irResult.gaps.map(g => ({ area: 'Incident Response', gap: g, priority: 'CRITICAL', effort: '15-30 days', owner: 'CISO + IT Manager', budget: '10-20k€' })),
@@ -1127,23 +1127,12 @@ async function exportRemediationPlan() {
     doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('These actions address critical compliance gaps and cybersecurity vulnerabilities requiring immediate attention.', 20, yPos);
-    yPos += 8;
-    doc.setFont('helvetica', 'bold');
-    const totalEffort = allRecs.length * 12; // Average 12 days per action
-    const totalBudget = allRecs.length * 10; // Average 10k€ per action
-    doc.text(`Estimated Resources:`, 25, yPos);
-    yPos += 6;
-    doc.setFont('helvetica', 'normal');
-    doc.text(`  • Time: ${totalEffort}-${Math.round(totalEffort * 1.5)} person-days`, 25, yPos);
-    yPos += 6;
-    doc.text(`  • Budget: ${totalBudget}k€ - ${Math.round(totalBudget * 1.5)}k€`, 25, yPos);
-    
     yPos += 12;
     
     // Priority Actions
-    yPos += 12;
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
+    doc.setTextColor(0, 0, 0);
     doc.text('Priority 1: CRITICAL ACTIONS (Immediate)', 20, yPos);
     
     yPos += 8;
@@ -1172,7 +1161,7 @@ async function exportRemediationPlan() {
             yPos += 4;
             doc.setFontSize(8);
             doc.setTextColor(80, 80, 80);
-            doc.text(`Owner: ${action.owner} | Effort: ${action.effort} | Budget: ${action.budget} | Deadline: ${action.deadline}`, 25, yPos);
+            doc.text(`Owner: ${action.owner} | Deadline: ${action.deadline}`, 25, yPos);
             yPos += 7;
             
             // Add detailed explanation if available
@@ -1251,7 +1240,7 @@ async function exportRemediationPlan() {
         yPos += 4;
         doc.setFontSize(8);
         doc.setTextColor(80, 80, 80);
-        doc.text(`Owner: ${action.owner} | Effort: ${action.effort} | Budget: ${action.budget} | Deadline: ${action.deadline}`, 25, yPos);
+        doc.text(`Owner: ${action.owner} | Deadline: ${action.deadline}`, 25, yPos);
         yPos += 7;
         
         // Add detailed explanation if available
