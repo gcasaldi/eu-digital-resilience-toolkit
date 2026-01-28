@@ -1,5 +1,5 @@
 // EU Digital Resilience Toolkit 2026 - Main Application Logic
-// Created by Giovanni Casaldi | @gcasaldi
+// Created by Giulia Casaldi | @gcasaldi
 
 let currentPhase = 0;
 
@@ -621,14 +621,39 @@ function renderResults() {
             <div class="results-section">
                 <h3>💡 Piano d'Azione Raccomandato (${allRecs.length})</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    Azioni concrete e prioritizzate per migliorare la postura di conformità
+                    Azioni concrete e prioritizzate per migliorare la postura di conformità. Clicca su ogni azione per vedere i dettagli completi.
                 </p>
-                <ol class="recommendations-list">
+                <div class="recommendations-list">
                     ${allRecs.map((r, idx) => {
                         const priority = idx < 3 ? '🔴 ALTA PRIORITÀ' : idx < 8 ? '🟡 MEDIA PRIORITÀ' : '🟢 BASSA PRIORITÀ';
-                        return `<li><span class="rec-priority">${priority}</span> ${r}</li>`;
+                        const explanation = typeof getRecommendationExplanation === 'function' ? getRecommendationExplanation(r) : null;
+                        
+                        let detailsHtml = '';
+                        if (explanation && explanation.why) {
+                            detailsHtml = `
+                                <div class="rec-details" style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-left: 3px solid #667eea; font-size: 0.9em;">
+                                    <p style="margin: 5px 0;"><strong>📌 Perché è importante:</strong> ${explanation.why}</p>
+                                    <p style="margin: 5px 0;"><strong>📋 Cosa fare:</strong> ${explanation.what}</p>
+                                    <p style="margin: 5px 0;"><strong>🔧 Come implementare:</strong> ${explanation.how}</p>
+                                    <p style="margin: 5px 0;"><strong>⏱️ Timeline:</strong> ${explanation.timeline}</p>
+                                    <p style="margin: 5px 0;"><strong>📦 Deliverables:</strong> ${explanation.deliverables}</p>
+                                </div>
+                            `;
+                        }
+                        
+                        return `
+                            <div class="recommendation-item" style="margin-bottom: 15px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; cursor: pointer;" onclick="this.querySelector('.rec-details').style.display = this.querySelector('.rec-details').style.display === 'none' ? 'block' : 'none';">
+                                <div style="display: flex; align-items: start; gap: 10px;">
+                                    <span style="font-weight: bold; min-width: 25px;">${idx + 1}.</span>
+                                    <div style="flex: 1;">
+                                        <div><span class="rec-priority" style="font-weight: bold;">${priority}</span> ${r}</div>
+                                        ${detailsHtml ? `<div class="rec-details" style="display: none;">${detailsHtml}</div>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     }).join('')}
-                </ol>
+                </div>
             </div>
             ` : ''}
             
@@ -749,7 +774,7 @@ function exportTextReport() {
     
     report += `\n` + `=`.repeat(70) + `\n`;
     report += `Report created by EU Digital Resilience Toolkit\n`;
-    report += `Created by Giovanni Casaldi | @gcasaldi\n`;
+    report += `Created by Giulia Casaldi | @gcasaldi\n`;
     report += `https://gcasaldi.github.io/eu-digital-resilience-toolkit/\n`;
     
     const blob = new Blob([report], { type: 'text/plain' });
@@ -1030,47 +1055,86 @@ async function exportRemediationPlan() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text('🎯 NIS2 Compliance Remediation Plan', 105, 20, { align: 'center' });
+    doc.text('🎯 NIS2 COMPLIANCE REMEDIATION PLAN', 105, 18, { align: 'center' });
     doc.setFontSize(11);
     doc.setFont('helvetica', 'normal');
-    doc.text('Actionable Roadmap to Full Compliance - Generated ' + new Date().toLocaleDateString('it-IT'), 105, 30, { align: 'center' });
+    doc.text('Actionable Roadmap to Full Compliance', 105, 28, { align: 'center' });
+    doc.setFontSize(9);
+    doc.text('Generated: ' + new Date().toLocaleDateString('it-IT') + ' | Created by Giulia Casaldi', 105, 35, { align: 'center' });
     
     let yPos = 50;
     
-    // Executive Summary
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('📊 Remediation Overview', 20, yPos);
+    // Document purpose banner
+    doc.setTextColor(70, 70, 70);
+    doc.setFillColor(248, 249, 250);
+    doc.rect(15, yPos, 180, 15, 'F');
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('This plan provides prioritized actions to achieve NIS2, DORA, and GDPR compliance.', 105, yPos + 5, { align: 'center' });
+    doc.text('Each action includes responsibility assignment, effort estimate, budget range, and deadline.', 105, yPos + 10, { align: 'center' });
     
-    yPos += 8;
+    yPos += 20;
+    
+    // Executive Summary
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(102, 126, 234);
+    doc.rect(15, yPos, 180, 8, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📊 EXECUTIVE SUMMARY', 20, yPos + 6);
+    
+    yPos += 12;
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
-    doc.text(`Total Actions Required: ${allRecs.length}`, 20, yPos);
-    yPos += 6;
     
+    // Summary box
+    doc.setFillColor(248, 249, 250);
+    doc.rect(20, yPos, 170, 40, 'F');
+    doc.setDrawColor(200, 200, 200);
+    doc.rect(20, yPos, 170, 40);
+    
+    yPos += 7;
     const criticalCount = allRecs.filter(r => r.priority === 'CRITICAL').length;
     const highCount = allRecs.filter(r => r.priority === 'HIGH').length;
     const mediumCount = allRecs.filter(r => r.priority === 'MEDIUM').length;
     
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Total Actions Required: ${allRecs.length}`, 25, yPos);
+    yPos += 7;
+    
+    doc.setFont('helvetica', 'normal');
     doc.setTextColor(...dangerColor);
-    doc.text(`🔴 Critical Priority: ${criticalCount} actions`, 20, yPos);
+    doc.text(`🔴 Critical Priority: ${criticalCount} actions (start immediately)`, 25, yPos);
     yPos += 6;
     doc.setTextColor(...warningColor);
-    doc.text(`🟡 High Priority: ${highCount} actions`, 20, yPos);
+    doc.text(`🟡 High Priority: ${highCount} actions (complete within Q1-Q2 2026)`, 25, yPos);
     yPos += 6;
     doc.setTextColor(100, 116, 139);
-    doc.text(`🟢 Medium Priority: ${mediumCount} actions`, 20, yPos);
-    yPos += 6;
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(...dangerColor);
+    doc.rect(15, yPos, 180, 8, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🔥 SECTION 1: CRITICAL ACTIONS (START IMMEDIATELY)', 20, yPos + 6);
     
-    doc.setTextColor(0, 0, 0);
+    yPos += 12;
+    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('These actions address critical compliance gaps and cybersecurity vulnerabilities requiring immediate attention.', 20, yPos);
+    yPos += 6
+    doc.setFont('helvetica', 'bold');
     const totalEffort = allRecs.length * 12; // Average 12 days per action
     const totalBudget = allRecs.length * 10; // Average 10k€ per action
-    doc.text(`Estimated Total Effort: ${totalEffort}-${totalEffort * 1.5} days`, 20, yPos);
+    doc.text(`Estimated Resources:`, 25, yPos);
     yPos += 6;
-    doc.text(`Estimated Total Budget: ${totalBudget}k€ - ${totalBudget * 1.5}k€`, 20, yPos);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`  • Time: ${totalEffort}-${Math.round(totalEffort * 1.5)} person-days`, 25, yPos);
     yPos += 6;
-    doc.text(`Target Completion: Q3-Q4 2026 (before NIS2 enforcement)`, 20, yPos);
+    doc.text(`  • Budget: ${totalBudget}k€ - ${Math.round(totalBudget * 1.5)}k€`, 25, yPos);
+    
+    yPos += 12;
     
     // Priority Actions
     yPos += 12;
@@ -1096,25 +1160,54 @@ async function exportRemediationPlan() {
             yPos += 5;
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(0, 0, 0);
-            const lines = doc.splitTextToSize(action.rec, 160);
-            doc.text(lines, 25, yPos);
-            yPos += lines.length * 4;
+            const recLines = doc.splitTextToSize(action.rec, 160);
+            doc.text(recLines, 25, yPos);
+            yPos += recLines.length * 4;
             
             yPos += 3;
             doc.setFontSize(8);
             doc.setTextColor(100, 116, 139);
             doc.text(`👤 Owner: ${action.owner} | ⏱️ Effort: ${action.effort} | 💰 Budget: ${action.budget} | 📅 Deadline: ${action.deadline}`, 25, yPos);
-            yPos += 8;
+            yPos += 6;
+            
+            // Add detailed explanation if available
+            if (typeof getRecommendationExplanation === 'function') {
+                const explanation = getRecommendationExplanation(action.rec);
+                if (explanation && explanation.why) {
+                    doc.setFontSize(7);
+                    doc.setFont('helvetica', 'italic');
+                    doc.setTextColor(60, 60, 60);
+                    
+                    const whyLines = doc.splitTextToSize(`Perché: ${explanation.why}`, 165);
+                    doc.text(whyLines, 25, yPos);
+                    yPos += whyLines.length * 3;
+                    
+                    yPos += 2;
+                    const howLines = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                    doc.text(howLines, 25, yPos);
+                    yPos += howLines.length * 3;
+                }
+            }
+            yPos += 4;
         });
     } else {
         doc.setFontSize(9);
         doc.setTextColor(...successColor);
         doc.text('✅ No critical actions required!', 20, yPos);
         yPos += 8;
-    }
+    }TextColor(255, 255, 255);
+    doc.setFillColor(...warningColor);
+    doc.rect(15, yPos, 180, 8, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🔴 SECTION 2: HIGH PRIORITY ACTIONS (Q1-Q2 2026)', 20, yPos + 6);
     
-    // High Priority Actions
-    yPos += 5;
+    yPos += 12;
+    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('These actions strengthen compliance posture and should be completed within the next 3-6 months.', 20, yPos);
+    yPos += 6
     if (yPos > 250) {
         doc.addPage();
         yPos = 20;
@@ -1142,16 +1235,54 @@ async function exportRemediationPlan() {
         yPos += 5;
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
-        const lines = doc.splitTextToSize(action.rec, 160);
-        doc.text(lines, 25, yPos);
-        yPos += lines.length * 4;
+        const actionLines = doc.splitTextToSize(action.rec, 160);
+        doc.text(actionLines, 25, yPos);
+        yPos += actionLines.length * 4;
         
         yPos += 3;
         doc.setFontSize(8);
         doc.setTextColor(100, 116, 139);
         doc.text(`👤 ${action.owner} | ⏱️ ${action.effort} | 💰 ${action.budget} | 📅 ${action.deadline}`, 25, yPos);
-        yPos += 8;
+        yPos += 6;
+        
+        // Add detailed explanation if available
+        if (typeof getRecommendationExplanation === 'function') {
+            const explanation = getRecommendationExplanation(action.rec);
+            if (explanation && explanation.why) {
+                doc.setFontSize(7);
+                doc.setFont('helvetica', 'italic');
+                doc.setTextColor(60, 60, 60);
+                
+                const whyText = doc.splitTextToSize(`Perché: ${explanation.why}`, 165);
+                doc.text(whyText, 25, yPos);
+                yPos += whyText.length * 3;
+                
+                yPos += 2;
+                const howText = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                doc.text(howText, 25, yPos);
+                yPos += howText.length * 3;
+            }
+        }
+        yPos += 4;
     });
+    
+    // Quick Wins Section
+    doc.addPage();
+    yPos = 20;
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(...successColor);
+    doc.rect(15, yPos, 180, 8, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('⚡ SECTION 3: QUICK WINS (30-60 Days)', 20, yPos + 6);
+    
+    yPos += 12;
+    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Low-effort, high-impact actions that can be implemented quickly to demonstrate progress.', 20, yPos);
+    yPos += 6
     
     // Quick Wins Section
     doc.addPage();
@@ -1177,10 +1308,19 @@ async function exportRemediationPlan() {
         '• Implement automated backup verification tests (IT - 5 days - 2k€)',
         '• Create supply chain security questionnaire template (Procurement - 3 days - 0€)'
     ];
+    TextColor(255, 255, 255);
+    doc.setFillColor(...primaryColor);
+    doc.rect(15, yPos, 180, 8, 'F');
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📅 SECTION 4: IMPLEMENTATION TIMELINE & ROADMAP', 20, yPos + 6);
     
-    quickWins.forEach(win => {
-        if (yPos > 270) {
-            doc.addPage();
+    yPos += 12;
+    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Phased approach to achieve full compliance by end of 2026 (before NIS2 enforcement).', 20, yPos);
+    yPos += 6
             yPos = 20;
         }
         const lines = doc.splitTextToSize(win, 170);
@@ -1208,17 +1348,22 @@ async function exportRemediationPlan() {
     const timeline = [
         { phase: 'Phase 1 (Q1 2026)', actions: 'Critical actions + Quick wins + Governance foundations', duration: '30-60 days' },
         { phase: 'Phase 2 (Q2 2026)', actions: 'High priority technical controls + Supply chain security', duration: '60-90 days' },
-        { phase: 'Phase 3 (Q3 2026)', actions: 'Medium priority + Testing & validation + Documentation', duration: '60-90 days' },
-        { phase: 'Phase 4 (Q4 2026)', actions: 'Final gap closure + External audit preparation + Certification', duration: '30-60 days' }
-    ];
+        { pha on all pages
+    const pageCount = doc.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`NIS2 Remediation Plan | Page ${i}/${pageCount}`, 105, 285, { align: 'center' });
+        doc.setFont('helvetica', 'italic');
+        doc.text(`EU Digital Resilience Toolkit | Created by Giulia Casaldi`, 105, 290, { align: 'center' });
+        doc.setFont('helvetica', 'normal');
+        doc.text(`Generated: ${new Date().toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' })}`, 105, 294, { align: 'center' });
+    }
     
-    timeline.forEach(t => {
-        if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-        }
-        doc.setFont('helvetica', 'bold');
-        doc.text(t.phase, 20, yPos);
+    // Save with clear filename
+    const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+    doc.save(`NIS2_Remediation_Plan_${timestamp
         yPos += 5;
         doc.setFont('helvetica', 'normal');
         const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);

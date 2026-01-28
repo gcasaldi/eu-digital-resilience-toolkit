@@ -1315,6 +1315,13 @@ def generate_pdf_report(result: AssessmentResult) -> bytes:
     pdf.cell(0, 6, f'Sector: {result.sector} | Scope: {result.scope}', 0, 1, 'C', True)
     pdf.ln(10)
     
+    # Regulatory Framework Banner
+    pdf.set_font('Arial', 'B', 10)
+    pdf.set_fill_color(248, 249, 250)
+    pdf.set_text_color(70, 70, 70)
+    pdf.cell(0, 7, 'Regulatory Framework: NIS2, DORA, GDPR, AI Act, CRA, ISO 27001, NIST CSF', 0, 1, 'C', True)
+    pdf.ln(5)
+    
     # Executive Summary Section
     pdf.set_font('Arial', 'B', 16)
     pdf.set_fill_color(102, 126, 234)
@@ -1331,12 +1338,30 @@ def generate_pdf_report(result: AssessmentResult) -> bytes:
     }
     risk_color = risk_colors.get(result.risk_level, (128, 128, 128))
     
+    # Score calculation explanation
+    pdf.set_font('Arial', '', 9)
+    pdf.set_text_color(70, 70, 70)
+    pdf.cell(0, 5, 'Overall Compliance Score = Sum of 4 assessment areas (max 25 points each)', 0, 1, 'C')
+    pdf.ln(3)
+    
     pdf.set_font('Arial', 'B', 14)
     pdf.set_fill_color(*risk_color)
     pdf.set_text_color(255, 255, 255)
     pdf.cell(0, 12, f'  TOTAL SCORE: {result.total_score}/100  |  RISK LEVEL: {result.risk_level}  ', 0, 1, 'C', True)
     pdf.set_text_color(0, 0, 0)
-    pdf.ln(8)
+    pdf.ln(3)
+    
+    # Risk level explanation
+    pdf.set_font('Arial', 'I', 9)
+    pdf.set_text_color(70, 70, 70)
+    risk_explanation = {
+        'LOW': 'Score >= 80/100 - Strong compliance posture, minor improvements needed',
+        'MEDIUM': 'Score 60-79/100 - Moderate gaps require attention and action planning',
+        'HIGH': 'Score < 60/100 - Critical action required, significant compliance gaps'
+    }
+    pdf.cell(0, 5, risk_explanation.get(result.risk_level, ''), 0, 1, 'C')
+    pdf.set_text_color(0, 0, 0)
+    pdf.ln(5)
     
     # Domain Breakdown
     pdf.set_font('Arial', 'B', 13)
@@ -1450,13 +1475,61 @@ def generate_pdf_report(result: AssessmentResult) -> bytes:
         pdf.set_font('Arial', 'I', 10)
         pdf.cell(0, 6, 'No recommendations needed - excellent compliance posture!', 0, 1, 'L')
     
-    # Footer
-    pdf.ln(15)
-    pdf.set_font('Arial', 'I', 8)
-    pdf.set_text_color(128, 128, 128)
-    pdf.multi_cell(0, 4, 'Disclaimer: This assessment is a readiness and risk evaluation tool. It does not constitute legal advice. Organizations should consult legal counsel for compliance strategy.')
-    pdf.ln(3)
-    pdf.cell(0, 4, 'EU Digital Resilience Toolkit v1.0 | Framework: NIS2 + DORA', 0, 0, 'C')
+    # Methodology Section (New Page)
+    pdf.add_page()
+    pdf.set_font('Arial', 'B', 16)
+    pdf.set_fill_color(102, 126, 234)
+    pdf.set_text_color(255, 255, 255)
+    pdf.cell(0, 10, ' ASSESSMENT METHODOLOGY', 0, 1, 'L', True)
+    pdf.set_text_color(0, 0, 0)
+    pdf.ln(5)
+    
+    pdf.set_font('Arial', '', 10)
+    methodology_text = [
+        'This assessment evaluates organizational cyber resilience across 4 critical domains:',
+        '',
+        '1. Governance & Scope (25 points): Board oversight, CISO designation, Model 231 integration,',
+        '   incident notification procedures, and regulatory compliance frameworks.',
+        '',
+        '2. Logging & Monitoring (25 points): Centralized logging, SIEM implementation, log retention',
+        '   policies, real-time alerting, and security operations center capabilities.',
+        '',
+        '3. ICT Third-Party Risk (25 points): Vendor security assessments, contract clauses,',
+        '   supply chain monitoring, and third-party incident response procedures.',
+        '',
+        '4. Incident Response & Resilience (25 points): IR team structure, playbooks, testing,',
+        '   business continuity planning, and disaster recovery capabilities.',
+        '',
+        'Each question uses a 3-tier verification approach:',
+        '- Policy existence (documented procedures)',
+        '- Implementation status (operational deployment)',
+        '- Evidence availability (audit-ready documentation)',
+        '',
+        'Scoring Thresholds:',
+        '- HIGH RISK (0-59 points): Critical compliance gaps, immediate action required',
+        '- MEDIUM RISK (60-79 points): Moderate gaps, action plan needed within 3-6 months',
+        '- LOW RISK (80-100 points): Strong posture, continuous improvement recommended'
+    ]
+    
+    for line in methodology_text:
+        if line:
+            pdf.multi_cell(0, 5, line)
+        else:
+            pdf.ln(3)
+    
+    # Footer on all pages
+    page_count = pdf.page_no()
+    for page in range(1, page_count + 1):
+        pdf.page = page
+        pdf.set_y(-20)
+        pdf.set_font('Arial', 'I', 8)
+        pdf.set_text_color(128, 128, 128)
+        pdf.cell(0, 4, f'Page {page}/{page_count}', 0, 0, 'C')
+        pdf.ln(4)
+        pdf.multi_cell(0, 4, 'Disclaimer: This assessment is a readiness tool. It does not constitute legal advice. Consult legal counsel for compliance strategy.', 0, 'C')
+        pdf.ln(2)
+        pdf.set_font('Arial', 'B', 8)
+        pdf.cell(0, 4, 'EU Digital Resilience Toolkit v1.0 | Created by Giulia Casaldi | Framework: NIS2 + DORA + GDPR + AI Act', 0, 0, 'C')
     
     return pdf.output(dest='S')
 

@@ -208,4 +208,4 @@ This tool's structure can be adapted for:
 4. **Contribute**: Add new modules (ISO 27001, SOC 2, etc.)
 5. **Feedback**: Use the "Send Anonymous Report" feature
 
-**Questions?** Open an issue on GitHub or email giulia@example.com
+
