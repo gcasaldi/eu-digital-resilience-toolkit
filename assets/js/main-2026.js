@@ -821,7 +821,7 @@ async function exportPDFReport() {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
-    doc.text('🛡️ NIS2 Gold Standard Assessment', 105, 20, { align: 'center' });
+    doc.text('NIS2 Gold Standard Assessment', 105, 20, { align: 'center' });
     doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text('EU Digital Resilience Toolkit - Compliance Report 2026', 105, 30, { align: 'center' });
@@ -831,7 +831,7 @@ async function exportPDFReport() {
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.text('📋 Executive Summary', 20, yPos);
+    doc.text('EXECUTIVE SUMMARY', 20, yPos);
     
     yPos += 10;
     doc.setFillColor(248, 250, 252);
@@ -851,7 +851,7 @@ async function exportPDFReport() {
     // Risk level with color
     if (riskLevel === 'LOW') {
         doc.setTextColor(...successColor);
-        doc.text('🟢 Risk Level: LOW - Strong compliance posture', 25, yPos);
+        doc.text('Risk Level: LOW - Strong compliance posture', 25, yPos);
     } else if (riskLevel === 'MEDIUM') {
         doc.setTextColor(...warningColor);
         doc.text('Risk Level: MEDIUM - Moderate gaps require attention', 25, yPos);
@@ -886,7 +886,7 @@ async function exportPDFReport() {
         
         doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.text(`${area.icon} ${area.name}`, 20, yPos);
+        doc.text(`${area.name}`, 20, yPos);
         doc.setFont('helvetica', 'normal');
         doc.text(`${area.score}/${area.max} (${areaPercentage}%)`, 160, yPos);
         
@@ -946,7 +946,7 @@ async function exportPDFReport() {
         });
     } else {
         doc.setTextColor(...successColor);
-        doc.text('✅ No critical findings identified - Excellent compliance posture!', 20, yPos);
+        doc.text('No critical findings identified - Excellent compliance posture!', 20, yPos);
         doc.setTextColor(0, 0, 0);
     }
     
@@ -982,8 +982,9 @@ async function exportPDFReport() {
             doc.addPage();
             yPos = 20;
         }
-        const priority = idx < 3 ? '🔴 HIGH' : '🟡 MEDIUM';
-        const lines = doc.splitTextToSize(`${idx + 1}. [${priority}] ${rec}`, 170);
+        const priority = idx < 3 ? 'HIGH' : 'MEDIUM';
+        const priorityLabel = idx < 3 ? '[CRITICO]' : '[MEDIO]';
+        const lines = doc.splitTextToSize(`${idx + 1}. ${priorityLabel} ${rec}`, 170);
         doc.text(lines, 20, yPos);
         yPos += lines.length * 5;
     });
@@ -1164,7 +1165,7 @@ async function exportRemediationPlan() {
             doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(0, 0, 0);
-            const recLines = doc.splitTextToSize(action.rec, 165);
+            const recLines = doc.splitTextToSize(action.rec, 170);
             doc.text(recLines, 25, yPos);
             yPos += recLines.length * 4.5;
             
@@ -1182,12 +1183,12 @@ async function exportRemediationPlan() {
                     doc.setFont('helvetica', 'italic');
                     doc.setTextColor(50, 50, 50);
                     
-                    const whyLines = doc.splitTextToSize(`Perche': ${explanation.why}`, 165);
+                    const whyLines = doc.splitTextToSize(`Perche': ${explanation.why}`, 170);
                     doc.text(whyLines, 25, yPos);
                     yPos += whyLines.length * 3.5;
                     
                     yPos += 3;
-                    const howLines = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                    const howLines = doc.splitTextToSize(`Come: ${explanation.how}`, 170);
                     doc.text(howLines, 25, yPos);
                     yPos += howLines.length * 3.5;
                 }
@@ -1197,7 +1198,7 @@ async function exportRemediationPlan() {
     } else {
         doc.setFontSize(9);
         doc.setTextColor(...successColor);
-        doc.text('✅ No critical actions required!', 20, yPos);
+        doc.text('No critical actions required!', 20, yPos);
         yPos += 8;
     }
     
@@ -1243,7 +1244,7 @@ async function exportRemediationPlan() {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
-        const actionLines = doc.splitTextToSize(action.rec, 165);
+        const actionLines = doc.splitTextToSize(action.rec, 170);
         doc.text(actionLines, 25, yPos);
         yPos += actionLines.length * 4.5;
         
@@ -1261,12 +1262,12 @@ async function exportRemediationPlan() {
                 doc.setFont('helvetica', 'italic');
                 doc.setTextColor(50, 50, 50);
                 
-                const whyText = doc.splitTextToSize(`Perche': ${explanation.why}`, 165);
+                const whyText = doc.splitTextToSize(`Perche': ${explanation.why}`, 170);
                 doc.text(whyText, 25, yPos);
                 yPos += whyText.length * 3.5;
                 
                 yPos += 3;
-                const howText = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                const howText = doc.splitTextToSize(`Come: ${explanation.how}`, 170);
                 doc.text(howText, 25, yPos);
                 yPos += howText.length * 3.5;
             }
@@ -1297,14 +1298,14 @@ async function exportRemediationPlan() {
     doc.setTextColor(0, 0, 0);
     
     const quickWins = [
-        '• Update Model 231 with cybersecurity protocols (Legal team - 5 days - 2k€)',
-        '• Formalize CISO/DPO/AI Officer roles with written mandates (HR + Legal - 3 days - 0€)',
-        '• Document existing MFA deployment and gaps (IT - 2 days - 0€)',
-        '• Create unified asset inventory spreadsheet (IT - 5 days - 1k€)',
-        '• Draft incident notification templates (24h CSIRT, 72h GDPR) (CISO - 3 days - 0€)',
-        '• Schedule quarterly security awareness training (HR - 2 days - 3k€/year)',
-        '• Implement automated backup verification tests (IT - 5 days - 2k€)',
-        '• Create supply chain security questionnaire template (Procurement - 3 days - 0€)'
+        '- Update Model 231 with cybersecurity protocols (Legal team - 5 days - 2k EUR)',
+        '- Formalize CISO/DPO/AI Officer roles with written mandates (HR + Legal - 3 days)',
+        '- Document existing MFA deployment and gaps (IT - 2 days)',
+        '- Create unified asset inventory spreadsheet (IT - 5 days - 1k EUR)',
+        '- Draft incident notification templates 24h CSIRT, 72h GDPR (CISO - 3 days)',
+        '- Schedule quarterly security awareness training (HR - 2 days - 3k EUR/year)',
+        '- Implement automated backup verification tests (IT - 5 days - 2k EUR)',
+        '- Create supply chain security questionnaire template (Procurement - 3 days)'
     ];
     
     quickWins.forEach(win => {
@@ -1389,7 +1390,7 @@ async function exportRemediationPlan() {
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
-        const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);
+        const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 175);
         doc.text(lines, 25, yPos);
         yPos += lines.length * 5 + 5;
     });
