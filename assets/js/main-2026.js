@@ -687,7 +687,7 @@ function renderResults() {
             <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
                 <p style="color: var(--text-secondary); font-size: 0.9rem;">
                     ⚠️ <strong>Disclaimer:</strong> Questo assessment è uno strumento di valutazione della readiness e del rischio. 
-                    Non costituisce consulenza legale. Le organizzazioni devono consultare esperti legali per la strategia di conformità.
+                    Non costituisce consulenza. Le organizzazioni devono consultare esperti per la strategia di conformità.
                 </p>
             </div>
         </div>
