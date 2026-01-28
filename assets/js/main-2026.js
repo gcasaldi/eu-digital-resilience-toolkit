@@ -1356,7 +1356,25 @@ async function exportRemediationPlan() {
     const timeline = [
         { phase: 'Phase 1 (Q1 2026)', actions: 'Critical actions + Quick wins + Governance foundations', duration: '30-60 days' },
         { phase: 'Phase 2 (Q2 2026)', actions: 'High priority technical controls + Supply chain security', duration: '60-90 days' },
-        { pha on all pages
+        { phase: 'Phase 3 (Q3 2026)', actions: 'Medium priority technical controls + Training programs', duration: '90-120 days' },
+        { phase: 'Phase 4 (Q4 2026)', actions: 'Low priority items + Continuous improvement', duration: 'Ongoing' }
+    ];
+    
+    timeline.forEach(t => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        doc.setFont('helvetica', 'bold');
+        doc.text(t.phase, 20, yPos);
+        yPos += 5;
+        doc.setFont('helvetica', 'normal');
+        const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);
+        doc.text(lines, 20, yPos);
+        yPos += lines.length * 5 + 3;
+    });
+    
+    // Footer on all pages
     const pageCount = doc.internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -1371,25 +1389,7 @@ async function exportRemediationPlan() {
     
     // Save with clear filename
     const timestamp = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-    doc.save(`NIS2_Remediation_Plan_${timestamp
-        yPos += 5;
-        doc.setFont('helvetica', 'normal');
-        const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);
-        doc.text(lines, 20, yPos);
-        yPos += lines.length * 5 + 3;
-    });
-    
-    // Footer
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFontSize(8);
-        doc.setTextColor(100, 116, 139);
-        doc.text(`NIS2 Remediation Plan | Page ${i}/${pageCount}`, 105, 285, { align: 'center' });
-        doc.text(`EU Digital Resilience Toolkit | Generated ${new Date().toLocaleDateString('it-IT')}`, 105, 290, { align: 'center' });
-    }
-    
-    doc.save(`NIS2_Remediation_Plan_${Date.now()}.pdf`);
+    doc.save(`NIS2_Remediation_Plan_${timestamp}.pdf`);
 }
 
 // Real-time feedback function - COMPREHENSIVE for ALL questions
