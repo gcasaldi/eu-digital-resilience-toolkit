@@ -1053,37 +1053,37 @@ async function exportRemediationPlan() {
     doc.setFillColor(...primaryColor);
     doc.rect(0, 0, 210, 40, 'F');
     doc.setTextColor(255, 255, 255);
-    doc.setFontSize(22);
+    doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
     doc.text('🎯 NIS2 COMPLIANCE REMEDIATION PLAN', 105, 18, { align: 'center' });
-    doc.setFontSize(11);
+    doc.setFontSize(12);
     doc.setFont('helvetica', 'normal');
     doc.text('Actionable Roadmap to Full Compliance', 105, 28, { align: 'center' });
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.text('Generated: ' + new Date().toLocaleDateString('it-IT') + ' | Created by Giulia Casaldi', 105, 35, { align: 'center' });
     
     let yPos = 50;
     
     // Document purpose banner
-    doc.setTextColor(70, 70, 70);
+    doc.setTextColor(50, 50, 50);
     doc.setFillColor(248, 249, 250);
-    doc.rect(15, yPos, 180, 15, 'F');
-    doc.setFontSize(9);
+    doc.rect(15, yPos, 180, 18, 'F');
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
-    doc.text('This plan provides prioritized actions to achieve NIS2, DORA, and GDPR compliance.', 105, yPos + 5, { align: 'center' });
-    doc.text('Each action includes responsibility assignment, effort estimate, budget range, and deadline.', 105, yPos + 10, { align: 'center' });
+    doc.text('This plan provides prioritized actions to achieve NIS2, DORA, and GDPR compliance.', 105, yPos + 6, { align: 'center' });
+    doc.text('Each action includes responsibility assignment, effort estimate, budget range, and deadline.', 105, yPos + 12, { align: 'center' });
     
-    yPos += 20;
+    yPos += 23;
     
     // Executive Summary
     doc.setTextColor(255, 255, 255);
     doc.setFillColor(102, 126, 234);
-    doc.rect(15, yPos, 180, 8, 'F');
-    doc.setFontSize(12);
+    doc.rect(15, yPos, 180, 10, 'F');
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('📊 EXECUTIVE SUMMARY', 20, yPos + 6);
+    doc.text('📊 EXECUTIVE SUMMARY', 20, yPos + 7);
     
-    yPos += 12;
+    yPos += 14;
     doc.setTextColor(0, 0, 0);
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');
@@ -1111,19 +1111,22 @@ async function exportRemediationPlan() {
     doc.text(`🟡 High Priority: ${highCount} actions (complete within Q1-Q2 2026)`, 25, yPos);
     yPos += 6;
     doc.setTextColor(100, 116, 139);
+    doc.text(`🔵 Medium Priority: ${mediumCount} actions (complete within Q3-Q4 2026)`, 25, yPos);
+    yPos += 10;
+    
     doc.setTextColor(255, 255, 255);
     doc.setFillColor(...dangerColor);
-    doc.rect(15, yPos, 180, 8, 'F');
-    doc.setFontSize(12);
+    doc.rect(15, yPos, 180, 10, 'F');
+    doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.text('🔥 SECTION 1: CRITICAL ACTIONS (START IMMEDIATELY)', 20, yPos + 6);
+    doc.text('🔥 SECTION 1: CRITICAL ACTIONS (START IMMEDIATELY)', 20, yPos + 7);
     
-    yPos += 12;
+    yPos += 14;
     doc.setTextColor(70, 70, 70);
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('These actions address critical compliance gaps and cybersecurity vulnerabilities requiring immediate attention.', 20, yPos);
-    yPos += 6
+    yPos += 8;
     doc.setFont('helvetica', 'bold');
     const totalEffort = allRecs.length * 12; // Average 12 days per action
     const totalBudget = allRecs.length * 10; // Average 10k€ per action
@@ -1152,62 +1155,66 @@ async function exportRemediationPlan() {
                 yPos = 20;
             }
             
-            doc.setFontSize(9);
+            doc.setFontSize(10);
             doc.setFont('helvetica', 'bold');
-            doc.setTextColor(...dangerColor);
+            doc.setTextColor(220, 38, 38);
             doc.text(`${idx + 1}. ${action.area}`, 20, yPos);
             
-            yPos += 5;
+            yPos += 6;
+            doc.setFontSize(9);
             doc.setFont('helvetica', 'normal');
             doc.setTextColor(0, 0, 0);
-            const recLines = doc.splitTextToSize(action.rec, 160);
+            const recLines = doc.splitTextToSize(action.rec, 165);
             doc.text(recLines, 25, yPos);
-            yPos += recLines.length * 4;
+            yPos += recLines.length * 4.5;
             
-            yPos += 3;
+            yPos += 4;
             doc.setFontSize(8);
-            doc.setTextColor(100, 116, 139);
+            doc.setTextColor(80, 80, 80);
             doc.text(`👤 Owner: ${action.owner} | ⏱️ Effort: ${action.effort} | 💰 Budget: ${action.budget} | 📅 Deadline: ${action.deadline}`, 25, yPos);
-            yPos += 6;
+            yPos += 7;
             
             // Add detailed explanation if available
             if (typeof getRecommendationExplanation === 'function') {
                 const explanation = getRecommendationExplanation(action.rec);
                 if (explanation && explanation.why) {
-                    doc.setFontSize(7);
+                    doc.setFontSize(8);
                     doc.setFont('helvetica', 'italic');
-                    doc.setTextColor(60, 60, 60);
+                    doc.setTextColor(50, 50, 50);
                     
-                    const whyLines = doc.splitTextToSize(`Perché: ${explanation.why}`, 165);
+                    const whyLines = doc.splitTextToSize(`💡 Perché: ${explanation.why}`, 165);
                     doc.text(whyLines, 25, yPos);
-                    yPos += whyLines.length * 3;
+                    yPos += whyLines.length * 3.5;
                     
-                    yPos += 2;
-                    const howLines = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                    yPos += 3;
+                    const howLines = doc.splitTextToSize(`🔧 Come: ${explanation.how}`, 165);
                     doc.text(howLines, 25, yPos);
-                    yPos += howLines.length * 3;
+                    yPos += howLines.length * 3.5;
                 }
             }
-            yPos += 4;
+            yPos += 5;
         });
     } else {
         doc.setFontSize(9);
         doc.setTextColor(...successColor);
         doc.text('✅ No critical actions required!', 20, yPos);
         yPos += 8;
-    }TextColor(255, 255, 255);
-    doc.setFillColor(...warningColor);
-    doc.rect(15, yPos, 180, 8, 'F');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('🔴 SECTION 2: HIGH PRIORITY ACTIONS (Q1-Q2 2026)', 20, yPos + 6);
+    }
     
-    yPos += 12;
+    // High Priority Section
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(...warningColor);
+    doc.rect(15, yPos, 180, 10, 'F');
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('🟡 SECTION 2: HIGH PRIORITY ACTIONS (Q1-Q2 2026)', 20, yPos + 7);
+    
+    yPos += 14;
     doc.setTextColor(70, 70, 70);
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('These actions strengthen compliance posture and should be completed within the next 3-6 months.', 20, yPos);
-    yPos += 6
+    yPos += 8;
     if (yPos > 250) {
         doc.addPage();
         yPos = 20;
@@ -1227,43 +1234,44 @@ async function exportRemediationPlan() {
             yPos = 20;
         }
         
-        doc.setFontSize(9);
+        doc.setFontSize(10);
         doc.setFont('helvetica', 'bold');
-        doc.setTextColor(...warningColor);
+        doc.setTextColor(200, 100, 0);
         doc.text(`${idx + 1}. ${action.area}`, 20, yPos);
         
-        yPos += 5;
+        yPos += 6;
+        doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(0, 0, 0);
-        const actionLines = doc.splitTextToSize(action.rec, 160);
+        const actionLines = doc.splitTextToSize(action.rec, 165);
         doc.text(actionLines, 25, yPos);
-        yPos += actionLines.length * 4;
+        yPos += actionLines.length * 4.5;
         
-        yPos += 3;
+        yPos += 4;
         doc.setFontSize(8);
-        doc.setTextColor(100, 116, 139);
+        doc.setTextColor(80, 80, 80);
         doc.text(`👤 ${action.owner} | ⏱️ ${action.effort} | 💰 ${action.budget} | 📅 ${action.deadline}`, 25, yPos);
-        yPos += 6;
+        yPos += 7;
         
         // Add detailed explanation if available
         if (typeof getRecommendationExplanation === 'function') {
             const explanation = getRecommendationExplanation(action.rec);
             if (explanation && explanation.why) {
-                doc.setFontSize(7);
+                doc.setFontSize(8);
                 doc.setFont('helvetica', 'italic');
-                doc.setTextColor(60, 60, 60);
+                doc.setTextColor(50, 50, 50);
                 
-                const whyText = doc.splitTextToSize(`Perché: ${explanation.why}`, 165);
+                const whyText = doc.splitTextToSize(`💡 Perché: ${explanation.why}`, 165);
                 doc.text(whyText, 25, yPos);
-                yPos += whyText.length * 3;
+                yPos += whyText.length * 3.5;
                 
-                yPos += 2;
-                const howText = doc.splitTextToSize(`Come: ${explanation.how}`, 165);
+                yPos += 3;
+                const howText = doc.splitTextToSize(`🔧 Come: ${explanation.how}`, 165);
                 doc.text(howText, 25, yPos);
-                yPos += howText.length * 3;
+                yPos += howText.length * 3.5;
             }
         }
-        yPos += 4;
+        yPos += 5;
     });
     
     // Quick Wins Section
@@ -1272,28 +1280,18 @@ async function exportRemediationPlan() {
     
     doc.setTextColor(255, 255, 255);
     doc.setFillColor(...successColor);
-    doc.rect(15, yPos, 180, 8, 'F');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('⚡ SECTION 3: QUICK WINS (30-60 Days)', 20, yPos + 6);
-    
-    yPos += 12;
-    doc.setTextColor(70, 70, 70);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'italic');
-    doc.text('Low-effort, high-impact actions that can be implemented quickly to demonstrate progress.', 20, yPos);
-    yPos += 6
-    
-    // Quick Wins Section
-    doc.addPage();
-    yPos = 20;
-    
+    doc.rect(15, yPos, 180, 10, 'F');
     doc.setFontSize(14);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...successColor);
-    doc.text('⚡ QUICK WINS (30-60 days - Low effort, high impact)', 20, yPos);
+    doc.text('⚡ SECTION 3: QUICK WINS (30-60 Days)', 20, yPos + 7);
     
+    yPos += 14;
+    doc.setTextColor(70, 70, 70);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text('Low-effort, high-impact actions that can be implemented quickly to demonstrate progress.', 20, yPos);
     yPos += 8;
+    
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(0, 0, 0);
@@ -1308,19 +1306,37 @@ async function exportRemediationPlan() {
         '• Implement automated backup verification tests (IT - 5 days - 2k€)',
         '• Create supply chain security questionnaire template (Procurement - 3 days - 0€)'
     ];
-    TextColor(255, 255, 255);
-    doc.setFillColor(...primaryColor);
-    doc.rect(15, yPos, 180, 8, 'F');
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text('📅 SECTION 4: IMPLEMENTATION TIMELINE & ROADMAP', 20, yPos + 6);
     
-    yPos += 12;
+    quickWins.forEach(win => {
+        if (yPos > 270) {
+            doc.addPage();
+            yPos = 20;
+        }
+        const lines = doc.splitTextToSize(win, 170);
+        doc.text(lines, 20, yPos);
+        yPos += lines.length * 5;
+    });
+    
+    // Implementation Timeline
+    yPos += 10;
+    if (yPos > 240) {
+        doc.addPage();
+        yPos = 20;
+    }
+    
+    doc.setTextColor(255, 255, 255);
+    doc.setFillColor(...primaryColor);
+    doc.rect(15, yPos, 180, 10, 'F');
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('📅 SECTION 4: IMPLEMENTATION TIMELINE & ROADMAP', 20, yPos + 7);
+    
+    yPos += 14;
     doc.setTextColor(70, 70, 70);
-    doc.setFontSize(9);
+    doc.setFontSize(10);
     doc.setFont('helvetica', 'italic');
     doc.text('Phased approach to achieve full compliance by end of 2026 (before NIS2 enforcement).', 20, yPos);
-    yPos += 8;
+    yPos += 10;
     
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
@@ -1365,13 +1381,17 @@ async function exportRemediationPlan() {
             doc.addPage();
             yPos = 20;
         }
+        doc.setFontSize(11);
         doc.setFont('helvetica', 'bold');
+        doc.setTextColor(...primaryColor);
         doc.text(t.phase, 20, yPos);
-        yPos += 5;
+        yPos += 6;
+        doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
+        doc.setTextColor(0, 0, 0);
         const lines = doc.splitTextToSize(`${t.actions} | Duration: ${t.duration}`, 170);
-        doc.text(lines, 20, yPos);
-        yPos += lines.length * 5 + 3;
+        doc.text(lines, 25, yPos);
+        yPos += lines.length * 5 + 5;
     });
     
     // Footer on all pages
