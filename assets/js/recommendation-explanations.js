@@ -141,7 +141,6 @@ const recommendationExplanations = {
         how: "Step 1: Job description AI Officer (mix competenze: tech, legal, ethics). Step 2: Nomina interna o hiring esterno. Step 3: Redazione AI Governance Policy. Step 4: Costituzione AI Risk Committee. Step 5: Calendario review trimestrali. Step 6: Training awareness AI ethics per dipendenti.",
         timeline: "60 giorni per nomina + setup governance. Ongoing operations",
         deliverables: "AI Officer nominato, AI Governance Policy, AI Risk Committee costituito, Training program AI ethics"
-    }
     },
     
     "CRITICO: Nominare formalmente CISO, DPO e Responsabile sorveglianza IA con lettera di incarico": {

@@ -1320,7 +1320,15 @@ async function exportRemediationPlan() {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'italic');
     doc.text('Phased approach to achieve full compliance by end of 2026 (before NIS2 enforcement).', 20, yPos);
-    yPos += 6
+    yPos += 8;
+    
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(0, 0, 0);
+    
+    quickWins.forEach(win => {
+        if (yPos > 270) {
+            doc.addPage();
             yPos = 20;
         }
         const lines = doc.splitTextToSize(win, 170);
